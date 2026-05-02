@@ -42,6 +42,7 @@ function classifyObjection(text: string): string {
 function detectOffer(text: string): string {
   const lower = text.toLowerCase();
   if (lower.includes("techup") || lower.includes("ai course") || lower.includes("ai program")) return "techup";
+  if (lower.includes("hvac") || lower.includes("heating") || lower.includes("cooling") || lower.includes("air conditioning") || lower.includes("furnace") || lower.includes("service call") || lower.includes("technician") || lower.includes("contractor")) return "ace_hvac";
   if (lower.includes("strategy") || lower.includes("consulting") || lower.includes("f10")) return "f10_strategy";
   return "general";
 }
