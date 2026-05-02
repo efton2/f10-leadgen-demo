@@ -24,10 +24,19 @@ const OBJECTION_MAP: Record<string, string[]> = {
 
 function classifyObjection(text: string): string {
   const lower = text.toLowerCase();
+  // Score every category by number of keyword hits, return the one with the most.
+  // First-match-wins caused ambiguous phrases ("know", "sure", "later") to fire
+  // the wrong category when a more specific category had more total matches.
+  let bestType = "general";
+  let bestScore = 0;
   for (const [type, keywords] of Object.entries(OBJECTION_MAP)) {
-    if (keywords.some((k) => lower.includes(k))) return type;
+    const score = keywords.filter((k) => lower.includes(k)).length;
+    if (score > bestScore) {
+      bestScore = score;
+      bestType = type;
+    }
   }
-  return "general";
+  return bestType;
 }
 
 function detectOffer(text: string): string {
