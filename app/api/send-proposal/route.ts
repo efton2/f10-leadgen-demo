@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
   const html = proposalToHtml(proposal, businessName);
 
   const { error } = await resend.emails.send({
-    from: "F10 AI Operator Systems <onboarding@resend.dev>",
+    from: "F10 AI Operator Systems <proposals@aioperatorsystems.com>",
     to: [to],
     subject: `AI Receptionist Proposal for ${businessName}`,
     html,
