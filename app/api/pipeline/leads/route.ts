@@ -22,17 +22,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "place_id and business_name are required" }, { status: 400 });
   }
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("pipeline_leads")
     .upsert(
       { place_id, business_name, address, phone, rating, review_count, category, city },
       { onConflict: "place_id", ignoreDuplicates: true }
-    )
-    .select()
-    .single();
+    );
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ lead: data });
+  return NextResponse.json({ saved: true });
 }
 
 // PATCH: update status and/or notes for a lead by id
