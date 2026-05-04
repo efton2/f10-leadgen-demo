@@ -34,7 +34,7 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  async function updateClient(id: string, updates: Record<string, string>) {
+  async function updateClient(id: string, updates: Record<string, string | null>) {
     setSaving(id);
     const res = await fetch("/api/pipeline/clients", {
       method: "PATCH",
@@ -122,7 +122,7 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
                   <input
                     type="date"
                     defaultValue={client.go_live_date ?? ""}
-                    onBlur={(e) => updateClient(client.id, { go_live_date: e.target.value })}
+                    onBlur={(e) => updateClient(client.id, { go_live_date: e.target.value || null })}
                     aria-label={`Go live date for ${client.business_name}`}
                     className="text-xs border border-gray-200 rounded px-2 py-1"
                   />
