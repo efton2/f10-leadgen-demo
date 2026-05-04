@@ -51,9 +51,24 @@ async function sweepOldReceptionists(apiKey: string): Promise<void> {
   }
 }
 
+// ─── NAME CLEANER ─────────────────────────────────────────────────────────────
+// Google Places often returns business names with a doctor or owner appended
+// after a colon, e.g. "San Antonio Cosmetic Surgery: Delio Ortegon MD, FACS".
+// The agent should only ever speak the business name — never the person's name.
+//
+// Rule: split on ": " and take only the first segment, trimmed.
+// Examples:
+//   "San Antonio Cosmetic Surgery: Delio Ortegon MD, FACS" → "San Antonio Cosmetic Surgery"
+//   "Smith Family Dental: Dr. Jane Smith" → "Smith Family Dental"
+//   "Joe's Pizza" → "Joe's Pizza" (unchanged — no colon)
+function cleanBusinessName(raw: string): string {
+  return raw.split(": ")[0].trim();
+}
+
 // ─── HANDLER ─────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const { name, niche } = await req.json();
+  const { name: rawName, niche } = await req.json();
+  const name = cleanBusinessName(rawName);
 
   const apiKey = process.env.ELEVENLABS_API_KEY;
   if (!apiKey) {
