@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
 export async function POST(req: NextRequest) {
-  const { name, niche, address, rating, reviewCount, phone, website } =
+  const { name, niche, address, rating, reviewCount, phone, website, snapshot } =
     await req.json();
 
   const apiKey = process.env.F10_ANTHROPIC_KEY;
@@ -43,7 +43,7 @@ Category: ${niceNiche}
 Address: ${address}
 Rating: ${ratingLine}
 ${phoneLine}
-${websiteLine}`;
+${websiteLine}${snapshot ? `\n\nAI Business Analysis (use this to personalize the proposal — reference specific strengths from this analysis in the "Why ${name} Stands Out" section):\n${snapshot}` : ""}`;
 
   const msg = await client.messages.create({
     model: "claude-sonnet-4-6",

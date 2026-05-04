@@ -10,6 +10,7 @@ interface Props {
   reviewCount: number;
   phone: string;
   website: string;
+  snapshot?: string;
 }
 
 function renderProposal(text: string) {
@@ -52,6 +53,7 @@ export default function ProposalGenerator({
   reviewCount,
   phone,
   website,
+  snapshot,
 }: Props) {
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [proposal, setProposal] = useState("");
@@ -65,7 +67,7 @@ export default function ProposalGenerator({
       const res = await fetch("/api/proposal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, niche, address, rating, reviewCount, phone, website }),
+        body: JSON.stringify({ name, niche, address, rating, reviewCount, phone, website, snapshot }),
       });
       if (!res.ok) throw new Error("Proposal generation failed");
       const data = await res.json();

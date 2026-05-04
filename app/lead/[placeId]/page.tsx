@@ -210,6 +210,7 @@ export default async function LeadDetailPage({
           reviewCount={lead.reviewCount}
           phone={lead.phone}
           website={lead.website}
+          snapshot={lead.snapshot}
         />
 
       </div>
