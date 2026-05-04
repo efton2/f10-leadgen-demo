@@ -45,10 +45,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS pipeline_leads_updated_at ON pipeline_leads;
 CREATE TRIGGER pipeline_leads_updated_at
   BEFORE UPDATE ON pipeline_leads
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS clients_updated_at ON clients;
 CREATE TRIGGER clients_updated_at
   BEFORE UPDATE ON clients
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_clients_lead_id ON clients(lead_id);
+
+-- Enable RLS
+ALTER TABLE pipeline_leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
+
+-- Anon key read/write — this is an internal tool using the anon key via Next.js server
+CREATE POLICY "allow_all_pipeline_leads" ON pipeline_leads FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_clients" ON clients FOR ALL USING (true) WITH CHECK (true);
