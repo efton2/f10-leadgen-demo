@@ -11,6 +11,7 @@ interface Props {
   phone: string;
   website: string;
   snapshot?: string;
+  placeId?: string;
 }
 
 function renderProposal(text: string) {
@@ -54,6 +55,7 @@ export default function ProposalGenerator({
   phone,
   website,
   snapshot,
+  placeId,
 }: Props) {
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [proposal, setProposal] = useState("");
@@ -91,7 +93,7 @@ export default function ProposalGenerator({
       const res = await fetch("/api/send-proposal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: email, businessName: name, proposal }),
+        body: JSON.stringify({ to: email, businessName: name, proposal, placeId, niche }),
       });
       if (!res.ok) throw new Error("Send failed");
       setSendState("sent");

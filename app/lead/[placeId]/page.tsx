@@ -211,6 +211,7 @@ export default async function LeadDetailPage({
           phone={lead.phone}
           website={lead.website}
           snapshot={lead.snapshot}
+          placeId={params.placeId}
         />
 
       </div>
