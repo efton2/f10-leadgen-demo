@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getLeadDetail } from "@/app/lib/getLeadDetail";
 import ReceptionistOrb from "@/app/components/ReceptionistOrb";
 import ProposalGenerator from "@/app/components/ProposalGenerator";
+import { supabase } from "@/lib/supabase";
 
 function StatBadge({ label, value }: { label: string; value: string }) {
   return (
@@ -51,6 +52,23 @@ export default async function LeadDetailPage({
   params: { placeId: string };
 }) {
   const lead = await getLeadDetail(params.placeId);
+
+  // Auto-save to pipeline on first view — upsert ignores if already exists
+  if (lead) {
+    await supabase.from("pipeline_leads").upsert(
+      {
+        place_id: params.placeId,
+        business_name: lead.name,
+        address: lead.address,
+        phone: lead.phone ?? "",
+        rating: lead.rating,
+        review_count: lead.reviewCount,
+        category: lead.types[0]?.replace(/_/g, " ") ?? "",
+        city: lead.address.split(",")[1]?.trim() ?? "",
+      },
+      { onConflict: "place_id", ignoreDuplicates: true }
+    );
+  }
 
   if (!lead) {
     return (
