@@ -62,8 +62,9 @@ Revenue Rescue workflow. Configured per client by Efton and Claude Code. Handles
 
 | Stage | Action | Status |
 |-------|--------|--------|
-| 1 | Efton searches a city and business type. Google Places returns results. Lead record created in Supabase. | New |
-| 2 | Efton clicks the lead. Claude generates a snapshot — pain points, pitch angle, missed follow-up opportunities. | Reviewed |
+| 1 | Efton searches a city and business type. Google Places returns results. | (not yet saved) |
+| 1b | Efton clicks a result to open the detail page. Lead record is saved to Supabase at this moment. | New |
+| 2 | Claude generates a snapshot on the detail page — pain points, pitch angle, missed follow-up opportunities. Status auto-updates. | Reviewed |
 | 3 | Live ElevenLabs voice demo runs — in person, via video, or via shareable link. Agent uses real business data. | Demoed |
 | 4 | Branded proposal sent via Resend. ACE begins automated follow-up sequence until prospect responds or books. | Proposal Sent |
 | 5 | Prospect books a call. Efton closes. Sabrina handles pricing. Client signs and pays. Client record created. | Closed |
