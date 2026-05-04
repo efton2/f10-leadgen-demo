@@ -31,6 +31,7 @@ interface PipelineLead {
   place_id: string;
   business_name: string;
   address: string;
+  phone?: string;
   rating: number;
   review_count: number;
   category: string;
@@ -45,6 +46,7 @@ export default function PipelineClient({ initialLeads }: { initialLeads: Pipelin
   const [leads, setLeads] = useState<PipelineLead[]>(initialLeads);
   const [saving, setSaving] = useState<string | null>(null);
   const [creatingClient, setCreatingClient] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function updateLead(id: string, updates: { status?: Status; notes?: string }) {
     setSaving(id);
@@ -58,6 +60,10 @@ export default function PipelineClient({ initialLeads }: { initialLeads: Pipelin
       setLeads((prev) => prev.map((l) => (l.id === id ? lead : l)));
     }
     setSaving(null);
+    if (!res.ok) {
+      setError(`Failed to save. Please try again.`);
+      setTimeout(() => setError(null), 4000);
+    }
   }
 
   async function createClient(lead: PipelineLead) {
@@ -68,7 +74,7 @@ export default function PipelineClient({ initialLeads }: { initialLeads: Pipelin
       body: JSON.stringify({
         lead_id: lead.id,
         business_name: lead.business_name,
-        contact_phone: lead.address,
+        contact_phone: lead.phone ?? "",
       }),
     });
     if (res.ok) {
@@ -81,6 +87,11 @@ export default function PipelineClient({ initialLeads }: { initialLeads: Pipelin
 
   return (
     <div className="bg-white rounded-f10 border border-gray-100 shadow-sm overflow-hidden">
+      {error && (
+        <div className="mb-4 px-4 py-2 bg-red-50 border border-red-200 rounded font-body text-sm text-red-600">
+          {error}
+        </div>
+      )}
       <table className="w-full text-sm font-body">
         <thead className="bg-f10-tint border-b border-gray-100">
           <tr>
@@ -113,7 +124,7 @@ export default function PipelineClient({ initialLeads }: { initialLeads: Pipelin
                   value={lead.status}
                   onChange={(e) => updateLead(lead.id, { status: e.target.value as Status })}
                   disabled={saving === lead.id}
-                  className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer ${STATUS_COLORS[lead.status]}`}
+                  className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer ${STATUS_COLORS[lead.status as Status] ?? STATUS_COLORS.new}`}
                 >
                   {STATUSES.map((s) => (
                     <option key={s} value={s}>{STATUS_LABELS[s]}</option>
