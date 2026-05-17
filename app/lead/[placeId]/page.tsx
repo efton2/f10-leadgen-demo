@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getLeadDetail } from "@/app/lib/getLeadDetail";
-import ReceptionistOrb from "@/app/components/ReceptionistOrb";
-import ProposalGenerator from "@/app/components/ProposalGenerator";
+import ProofStack from "@/app/components/ProofStack";
 import { supabase } from "@/lib/supabase";
 
 function StatBadge({ label, value }: { label: string; value: string }) {
@@ -92,7 +91,7 @@ export default async function LeadDetailPage({
             <span className="text-white text-xs font-body font-semibold">F10</span>
           </div>
           <span className="font-heading text-xl font-semibold text-f10-text tracking-wide">
-            AI Operator Systems
+            Simporic
           </span>
         </div>
         <Link href="/" className="font-body text-sm text-f10-primary hover:underline">
@@ -192,26 +191,12 @@ export default async function LeadDetailPage({
           </div>
         )}
 
-        {/* AI Receptionist */}
-        <div className="mb-6">
-          <ReceptionistOrb
-            name={lead.name}
-            niche={niceType}
-            phone={lead.phone}
-          />
-        </div>
-
-        {/* Proposal generator */}
-        <ProposalGenerator
+        {/* Proof Stack — Competitive Analysis + Receptionist + ACE */}
+        <ProofStack
           name={lead.name}
           niche={niceType}
-          address={lead.address}
-          rating={lead.rating}
-          reviewCount={lead.reviewCount}
           phone={lead.phone}
-          website={lead.website}
-          snapshot={lead.snapshot}
-          placeId={params.placeId}
+          address={lead.address}
         />
 
       </div>
@@ -219,7 +204,7 @@ export default async function LeadDetailPage({
       {/* Footer */}
       <footer className="bg-f10-footer border-t border-f10-border px-8 py-5 text-center">
         <p className="font-body text-xs text-gray-400">
-          Function 10 Media LLC &nbsp;&bull;&nbsp; AI Operator Systems Demo
+          Simporic
         </p>
       </footer>
     </main>
