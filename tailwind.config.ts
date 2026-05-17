@@ -11,11 +11,11 @@ const config: Config = {
       colors: {
         f10: {
           primary: "#4A6FA5",
-          bg: "#FFFDF8",
-          tint: "#FDF4E7",
+          bg: "#F9F3E8",
+          tint: "#F2E0B8",
           text: "#1F2937",
-          footer: "#FBF6EE",
-          border: "#E8DCC8",
+          footer: "#F4EAD5",
+          border: "#D4B896",
         },
       },
       fontFamily: {
