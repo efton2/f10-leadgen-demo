@@ -52,6 +52,48 @@ function SectionHeader({
   );
 }
 
+type StepStatus = "waiting" | "active" | "done";
+type AnalysisSteps = Record<string, StepStatus>;
+
+const STEPS = [
+  { id: "gather", label: "Gathering competitor data" },
+  { id: "scrape", label: "Scraping websites" },
+  { id: "synthesize", label: "Analyzing with AI" },
+  { id: "build", label: "Building report" },
+];
+
+function AnalysisProgress({ steps, log }: { steps: AnalysisSteps; log: string[] }) {
+  const lastLog = log[log.length - 1];
+  return (
+    <div className="mt-4 bg-f10-bg rounded-lg p-4 space-y-3">
+      {STEPS.map((step) => {
+        const status = steps[step.id] ?? "waiting";
+        return (
+          <div key={step.id} className="flex items-center gap-3">
+            <span className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-300 ${
+              status === "done" ? "bg-green-500" :
+              status === "active" ? "bg-f10-primary animate-pulse" :
+              "bg-gray-700"
+            }`} />
+            <span className={`font-body text-sm flex-1 transition-colors duration-300 ${
+              status === "done" ? "text-green-400" :
+              status === "active" ? "text-f10-text" :
+              "text-gray-600"
+            }`}>{step.label}</span>
+            {status === "done" && <span className="font-body text-xs text-green-500">✓</span>}
+            {status === "active" && <span className="font-body text-xs text-f10-primary animate-pulse">Running</span>}
+          </div>
+        );
+      })}
+      {lastLog && (
+        <p className="font-mono text-[11px] text-gray-600 pt-1 border-t border-f10-border truncate">
+          › {lastLog}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function ProofStack({ name, niche, phone, address }: Props) {
   // ── Competitive Analysis state ──────────────────────────────────────────────
   const city = address.split(",").slice(1, 3).join(",").trim();
@@ -61,6 +103,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
   const [competitors, setCompetitors] = useState(["", "", "", "", ""]);
   const [competitorsLoading, setCompetitorsLoading] = useState(true);
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus>("idle");
+  const [steps, setSteps] = useState<AnalysisSteps>({});
   const [log, setLog] = useState<string[]>([]);
   const [reportHtml, setReportHtml] = useState<string | null>(null);
 
@@ -161,6 +204,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
     }
 
     setAnalysisStatus("running");
+    setSteps({ gather: "active" });
     setLog([]);
     setReportHtml(null);
 
@@ -194,8 +238,19 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
           if (!line.startsWith("data: ")) continue;
           try {
             const event = JSON.parse(line.slice(6));
-            if (event.type === "log") setLog((prev) => [...prev, event.msg]);
+            if (event.type === "log") {
+              setLog((prev) => [...prev, event.msg]);
+              const msg: string = event.msg;
+              if (msg.startsWith("Scraping ") && msg.includes(" competitors")) {
+                setSteps({ gather: "done", scrape: "active" });
+              } else if (msg.startsWith("Synthesizing")) {
+                setSteps({ gather: "done", scrape: "done", synthesize: "active" });
+              } else if (msg.startsWith("Building report")) {
+                setSteps({ gather: "done", scrape: "done", synthesize: "done", build: "active" });
+              }
+            }
             if (event.type === "done") {
+              setSteps({ gather: "done", scrape: "done", synthesize: "done", build: "done" });
               setReportHtml(event.html);
               setAnalysisStatus("done");
             }
@@ -327,13 +382,9 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
           </button>
         )}
 
-        {/* Log */}
-        {log.length > 0 && (
-          <div className="mt-4 bg-f10-tint rounded-lg p-3 font-mono text-xs text-gray-400 space-y-1 max-h-32 overflow-y-auto">
-            {log.map((l, i) => (
-              <div key={i}>&rsaquo; {l}</div>
-            ))}
-          </div>
+        {/* Progress tracker */}
+        {analysisStatus === "running" && (
+          <AnalysisProgress steps={steps} log={log} />
         )}
 
         {/* Result */}
