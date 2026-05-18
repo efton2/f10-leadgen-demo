@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const APIFY_TOKEN = process.env.APIFY_TOKEN!;
 const anthropic = new Anthropic({ apiKey: process.env.F10_ANTHROPIC_KEY });
@@ -46,8 +46,8 @@ async function runApifyActor(actorId: string, input: object): Promise<unknown[]>
   const { data: run } = await runRes.json();
   const runId: string = run.id;
 
-  for (let i = 0; i < 24; i++) {
-    await new Promise((r) => setTimeout(r, 5000));
+  for (let i = 0; i < 48; i++) {
+    await new Promise((r) => setTimeout(r, 2500));
     const statusRes = await fetch(
       `https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${APIFY_TOKEN}`
     );
