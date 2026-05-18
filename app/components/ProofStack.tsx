@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import ReceptionistOrb from "./ReceptionistOrb";
 
 interface Props {
@@ -59,9 +59,37 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
   const [market, setMarket] = useState(city);
   const [marketDisplay, setMarketDisplay] = useState(city);
   const [competitors, setCompetitors] = useState(["", "", "", "", ""]);
+  const [competitorsLoading, setCompetitorsLoading] = useState(true);
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus>("idle");
   const [log, setLog] = useState<string[]>([]);
   const [reportHtml, setReportHtml] = useState<string | null>(null);
+
+  // Auto-populate competitors from Google Places on mount
+  useEffect(() => {
+    async function fetchCompetitors() {
+      try {
+        const res = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ niche, city }),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        const names: string[] = (data.leads as Array<{ name: string }>)
+          .filter((l) => l.name.toLowerCase() !== name.toLowerCase())
+          .slice(0, 5)
+          .map((l) => l.name);
+        if (names.length > 0) {
+          setCompetitors([...names, ...Array(5 - names.length).fill("")].slice(0, 5));
+        }
+      } catch {
+        // leave empty — user can fill manually
+      } finally {
+        setCompetitorsLoading(false);
+      }
+    }
+    fetchCompetitors();
+  }, [niche, city, name]);
 
   // ── Receptionist state ──────────────────────────────────────────────────────
   const [receptionistUsed, setReceptionistUsed] = useState(false);
@@ -255,21 +283,37 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
 
         {/* Competitor inputs */}
         <div className="space-y-2 mb-5">
-          <label className="block font-body text-xs uppercase tracking-wider text-gray-400">
-            Competitors (up to 5)
-          </label>
-          {competitors.map((c, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <span className="font-body text-xs text-f10-primary font-semibold w-4">{i + 1}</span>
-              <input
-                type="text"
-                value={c}
-                onChange={(e) => updateCompetitor(i, e.target.value)}
-                placeholder="Competitor name"
-                className="flex-1 border border-f10-border bg-f10-bg text-f10-text rounded-lg px-3 py-2 font-body text-sm focus:outline-none focus:border-f10-primary placeholder:text-gray-600"
-              />
+          <div className="flex items-center justify-between mb-1">
+            <label className="block font-body text-xs uppercase tracking-wider text-gray-400">
+              Competitors (up to 5)
+            </label>
+            {competitorsLoading && (
+              <span className="font-body text-xs text-gray-600 animate-pulse">Finding nearby competitors...</span>
+            )}
+          </div>
+          {competitorsLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="font-body text-xs text-f10-primary font-semibold w-4">{i + 1}</span>
+                  <div className="flex-1 h-9 bg-f10-bg rounded-lg animate-pulse" />
+                </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            competitors.map((c, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="font-body text-xs text-f10-primary font-semibold w-4">{i + 1}</span>
+                <input
+                  type="text"
+                  value={c}
+                  onChange={(e) => updateCompetitor(i, e.target.value)}
+                  placeholder="Competitor name"
+                  className="flex-1 border border-f10-border bg-f10-bg text-f10-text rounded-lg px-3 py-2 font-body text-sm focus:outline-none focus:border-f10-primary placeholder:text-gray-600"
+                />
+              </div>
+            ))
+          )}
         </div>
 
         {/* Generate button */}
