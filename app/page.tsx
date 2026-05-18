@@ -117,25 +117,25 @@ export default function Home() {
 
         {/* Search form */}
         <form onSubmit={handleSearch} className="w-full max-w-2xl bg-f10-tint rounded-f10 border border-f10-border p-5">
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               value={niche}
               onChange={(e) => setNiche(e.target.value)}
               placeholder="Business type (dentists, salons, HVAC...)"
-              className="flex-1 font-body text-sm bg-f10-bg text-f10-text border border-f10-border rounded-f10 px-4 py-3 focus:outline-none focus:border-f10-primary transition-colors placeholder:text-gray-600"
+              className="w-full sm:flex-1 font-body text-sm bg-f10-bg text-f10-text border border-f10-border rounded-f10 px-4 py-3 focus:outline-none focus:border-f10-primary transition-colors placeholder:text-gray-600"
             />
             <input
               type="text"
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="City"
-              className="w-36 font-body text-sm bg-f10-bg text-f10-text border border-f10-border rounded-f10 px-4 py-3 focus:outline-none focus:border-f10-primary transition-colors placeholder:text-gray-600"
+              className="w-full sm:w-36 font-body text-sm bg-f10-bg text-f10-text border border-f10-border rounded-f10 px-4 py-3 focus:outline-none focus:border-f10-primary transition-colors placeholder:text-gray-600"
             />
             <button
               type="submit"
               disabled={loading || !niche.trim() || !city.trim()}
-              className="bg-f10-primary text-white font-body text-sm font-medium px-6 py-3 rounded-f10 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#C8870A] active:scale-[0.97] transition-[transform,background-color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150"
+              className="w-full sm:w-auto bg-f10-primary text-white font-body text-sm font-medium px-6 py-3 rounded-f10 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#C8870A] active:scale-[0.97] transition-[transform,background-color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150"
             >
               {loading ? "Searching..." : "Search"}
             </button>
