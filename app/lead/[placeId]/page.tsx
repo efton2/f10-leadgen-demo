@@ -6,8 +6,8 @@ import { supabase } from "@/lib/supabase";
 
 function StatBadge({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-f10-tint rounded-f10 px-5 py-4 text-center">
-      <p className="font-heading text-2xl font-semibold text-f10-primary">{value}</p>
+    <div className="bg-f10-tint rounded-f10 px-3 py-4 text-center">
+      <p className="font-heading text-lg font-semibold text-f10-primary leading-tight line-clamp-2">{value}</p>
       <p className="font-body text-xs text-gray-400 mt-1">{label}</p>
     </div>
   );
