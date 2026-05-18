@@ -10,12 +10,12 @@ const config: Config = {
     extend: {
       colors: {
         f10: {
-          primary: "#4A6FA5",
-          bg: "#F9F3E8",
-          tint: "#F2E0B8",
-          text: "#1F2937",
-          footer: "#F4EAD5",
-          border: "#D4B896",
+          primary: "#E8A020",
+          bg: "#0A1520",
+          tint: "#162C42",
+          text: "#F5EFE6",
+          footer: "#060D16",
+          border: "#264766",
         },
       },
       fontFamily: {
@@ -24,6 +24,15 @@ const config: Config = {
       },
       borderRadius: {
         f10: "12px",
+      },
+      animation: {
+        "fade-up": "fadeUp 350ms cubic-bezier(0.23, 1, 0.32, 1) both",
+      },
+      keyframes: {
+        fadeUp: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
       },
       spacing: {
         "4": "4px",

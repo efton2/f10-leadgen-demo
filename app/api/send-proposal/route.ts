@@ -35,7 +35,7 @@ function proposalToHtml(proposal: string, businessName: string): string {
                   <span style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#FFFFFF;">F10</span>
                 </td>
                 <td style="padding-left:12px;">
-                  <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">AI Operator Systems</span>
+                  <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">Simporic</span>
                 </td>
               </tr>
             </table>
@@ -67,7 +67,7 @@ function proposalToHtml(proposal: string, businessName: string): string {
         <!-- Footer -->
         <tr>
           <td style="background:#F7F9FC;border-top:1px solid #E5E0D8;padding:20px 36px;text-align:center;">
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Function 10 Media LLC &nbsp;&bull;&nbsp; AI Operator Systems &nbsp;&bull;&nbsp; function10media.com</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com</p>
           </td>
         </tr>
 
@@ -88,7 +88,7 @@ function followUp24Html(businessName: string, aceUrl: string): string {
       <table width="600" cellpadding="0" cellspacing="0" style="margin:0 auto;background:#FFFFFF;border-radius:12px;border:1px solid #E5E0D8;overflow:hidden;">
         <tr>
           <td style="background:#4A6FA5;padding:24px 36px;">
-            <span style="font-family:Georgia,serif;font-size:16px;font-weight:600;color:#FFFFFF;">AI Operator Systems</span>
+            <span style="font-family:Georgia,serif;font-size:16px;font-weight:600;color:#FFFFFF;">Simporic</span>
           </td>
         </tr>
         <tr>
@@ -108,7 +108,7 @@ function followUp24Html(businessName: string, aceUrl: string): string {
         </tr>
         <tr>
           <td style="background:#F7F9FC;border-top:1px solid #E5E0D8;padding:20px 36px;text-align:center;">
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Function 10 Media LLC &nbsp;&bull;&nbsp; AI Operator Systems</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com</p>
           </td>
         </tr>
       </table>
@@ -128,7 +128,7 @@ function finalNoticeHtml(businessName: string, aceUrl: string): string {
       <table width="600" cellpadding="0" cellspacing="0" style="margin:0 auto;background:#FFFFFF;border-radius:12px;border:1px solid #E5E0D8;overflow:hidden;">
         <tr>
           <td style="background:#4A6FA5;padding:24px 36px;">
-            <span style="font-family:Georgia,serif;font-size:16px;font-weight:600;color:#FFFFFF;">AI Operator Systems</span>
+            <span style="font-family:Georgia,serif;font-size:16px;font-weight:600;color:#FFFFFF;">Simporic</span>
           </td>
         </tr>
         <tr>
@@ -147,7 +147,7 @@ function finalNoticeHtml(businessName: string, aceUrl: string): string {
         </tr>
         <tr>
           <td style="background:#F7F9FC;border-top:1px solid #E5E0D8;padding:20px 36px;text-align:center;">
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Function 10 Media LLC &nbsp;&bull;&nbsp; AI Operator Systems</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com</p>
           </td>
         </tr>
       </table>
@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
 
   // 1. Send the proposal email now
   const { error } = await resend.emails.send({
-    from: "F10 AI Operator Systems <proposals@aioperatorsystems.com>",
+    from: "Simporic <proposals@simporic.com>",
     to: [to],
     subject: `AI Receptionist Proposal for ${businessName}`,
     html,
@@ -214,7 +214,7 @@ export async function POST(req: NextRequest) {
   // 2. Schedule 24-hour follow-up
   const followUp24At = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
   await resend.emails.send({
-    from: "F10 AI Operator Systems <proposals@aioperatorsystems.com>",
+    from: "Simporic <proposals@simporic.com>",
     to: [to],
     subject: `Quick question about the ${businessName} proposal`,
     html: followUp24Html(businessName, aceLink),
@@ -224,7 +224,7 @@ export async function POST(req: NextRequest) {
   // 3. Schedule day-5 final notice
   const finalNoticeAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
   await resend.emails.send({
-    from: "F10 AI Operator Systems <proposals@aioperatorsystems.com>",
+    from: "Simporic <proposals@simporic.com>",
     to: [to],
     subject: `Last note on the ${businessName} proposal`,
     html: finalNoticeHtml(businessName, aceLink),

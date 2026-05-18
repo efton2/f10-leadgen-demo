@@ -116,6 +116,9 @@ export async function POST(req: NextRequest) {
           first_message: `Thank you for calling ${name}. How can I help you today?`,
           language: "en",
         },
+        tts: {
+          voice_id: "ZT9u07TYPVl83ejeLakq",
+        },
       },
     }),
   });

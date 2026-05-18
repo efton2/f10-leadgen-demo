@@ -198,7 +198,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
       </div>
 
       {/* ── 1. Competitive Analysis ── */}
-      <div className="bg-white rounded-f10 border border-f10-border p-6 mb-4">
+      <div className="bg-f10-tint rounded-f10 border border-f10-border p-6 mb-4 animate-fade-up [animation-delay:0ms]">
         <SectionHeader
           num="01"
           title="Competitive Analysis"
@@ -211,7 +211,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
             <button
               key={b.value}
               onClick={() => setBrand(b.value)}
-              className={`flex-1 py-3 px-4 rounded-lg border text-left transition-all ${
+              className={`flex-1 py-3 px-4 rounded-lg border text-left transition-[transform,border-color,background-color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-200 active:scale-[0.97] ${
                 brand === b.value
                   ? "border-f10-primary bg-f10-tint"
                   : "border-f10-border hover:border-gray-300"
@@ -236,7 +236,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
               value={market}
               onChange={(e) => setMarket(e.target.value)}
               placeholder="e.g. Miami, FL or 33133"
-              className="w-full border border-f10-border rounded-lg px-3 py-2 font-body text-sm text-f10-text focus:outline-none focus:border-f10-primary"
+              className="w-full border border-f10-border bg-f10-bg text-f10-text rounded-lg px-3 py-2 font-body text-sm focus:outline-none focus:border-f10-primary placeholder:text-gray-600"
             />
           </div>
           <div>
@@ -248,7 +248,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
               value={marketDisplay}
               onChange={(e) => setMarketDisplay(e.target.value)}
               placeholder="e.g. Miami, FL"
-              className="w-full border border-f10-border rounded-lg px-3 py-2 font-body text-sm text-f10-text focus:outline-none focus:border-f10-primary"
+              className="w-full border border-f10-border bg-f10-bg text-f10-text rounded-lg px-3 py-2 font-body text-sm focus:outline-none focus:border-f10-primary placeholder:text-gray-600"
             />
           </div>
         </div>
@@ -266,7 +266,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
                 value={c}
                 onChange={(e) => updateCompetitor(i, e.target.value)}
                 placeholder="Competitor name"
-                className="flex-1 border border-f10-border rounded-lg px-3 py-2 font-body text-sm text-f10-text focus:outline-none focus:border-f10-primary"
+                className="flex-1 border border-f10-border bg-f10-bg text-f10-text rounded-lg px-3 py-2 font-body text-sm focus:outline-none focus:border-f10-primary placeholder:text-gray-600"
               />
             </div>
           ))}
@@ -277,7 +277,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
           <button
             onClick={runAnalysis}
             disabled={analysisStatus === "running"}
-            className="w-full py-3 rounded-lg bg-f10-primary text-white font-body text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3d5e8e] transition-colors"
+            className="w-full py-3 rounded-lg bg-f10-primary text-white font-body text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#C8870A] active:scale-[0.97] transition-[transform,background-color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150"
           >
             {analysisStatus === "running" ? "Generating..." : "Generate Report"}
           </button>
@@ -285,7 +285,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
 
         {/* Log */}
         {log.length > 0 && (
-          <div className="mt-4 bg-f10-tint rounded-lg p-3 font-mono text-xs text-gray-500 space-y-1 max-h-32 overflow-y-auto">
+          <div className="mt-4 bg-f10-tint rounded-lg p-3 font-mono text-xs text-gray-400 space-y-1 max-h-32 overflow-y-auto">
             {log.map((l, i) => (
               <div key={i}>&rsaquo; {l}</div>
             ))}
@@ -297,13 +297,13 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
           <div className="mt-4 flex gap-3">
             <button
               onClick={openReport}
-              className="flex-1 py-3 rounded-lg bg-f10-primary text-white font-body text-sm font-semibold hover:bg-[#3d5e8e] transition-colors"
+              className="flex-1 py-3 rounded-lg bg-f10-primary text-white font-body text-sm font-semibold hover:bg-[#C8870A] active:scale-[0.97] transition-[transform,background-color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150"
             >
               View Report
             </button>
             <button
               onClick={runAnalysis}
-              className="px-4 py-3 rounded-lg border border-f10-border font-body text-sm text-gray-500 hover:border-f10-primary hover:text-f10-primary transition-colors"
+              className="px-4 py-3 rounded-lg border border-f10-border font-body text-sm text-gray-400 hover:border-f10-primary hover:text-f10-primary active:scale-[0.97] transition-[transform,border-color,color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150"
             >
               Regenerate
             </button>
@@ -312,7 +312,7 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
       </div>
 
       {/* ── 2. AI Receptionist ── */}
-      <div className="bg-white rounded-f10 border border-f10-border p-6 mb-4">
+      <div className="bg-f10-tint rounded-f10 border border-f10-border p-6 mb-4 animate-fade-up [animation-delay:80ms]">
         <SectionHeader
           num="02"
           title="AI Receptionist Demo"
@@ -324,13 +324,13 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
       </div>
 
       {/* ── 3. ACE Closer ── */}
-      <div className="bg-white rounded-f10 border border-f10-border p-6">
+      <div className="bg-f10-tint rounded-f10 border border-f10-border p-6 animate-fade-up [animation-delay:160ms]">
         <SectionHeader
           num="03"
           title="ACE Sales Closer"
           status={aceOpened || aceCopied ? "done" : "idle"}
         />
-        <p className="font-body text-sm text-gray-500 mb-5">
+        <p className="font-body text-sm text-gray-400 mb-5">
           Launch the AI sales closer. The prospect starts a conversation and ACE handles every objection with the competitive intelligence already loaded.
         </p>
         {reportHtml && (
@@ -342,13 +342,13 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
           <button
             onClick={openAce}
             disabled={aceLoading}
-            className="flex-1 py-3 rounded-lg bg-f10-primary text-white font-body text-sm font-semibold hover:bg-[#3d5e8e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-3 rounded-lg bg-f10-primary text-white font-body text-sm font-semibold hover:bg-[#C8870A] active:scale-[0.97] transition-[transform,background-color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {aceLoading ? "Loading ACE..." : reportHtml ? "Open ACE (with intel)" : "Open ACE"}
           </button>
           <button
             onClick={copyAceLink}
-            className="px-4 py-3 rounded-lg border border-f10-border font-body text-sm text-gray-500 hover:border-f10-primary hover:text-f10-primary transition-colors"
+            className="px-4 py-3 rounded-lg border border-f10-border font-body text-sm text-gray-400 hover:border-f10-primary hover:text-f10-primary active:scale-[0.97] transition-[transform,border-color,color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150"
           >
             {aceCopied ? "Copied!" : "Copy Link"}
           </button>

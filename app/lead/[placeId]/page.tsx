@@ -8,7 +8,7 @@ function StatBadge({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-f10-tint rounded-f10 px-5 py-4 text-center">
       <p className="font-heading text-2xl font-semibold text-f10-primary">{value}</p>
-      <p className="font-body text-xs text-gray-500 mt-1">{label}</p>
+      <p className="font-body text-xs text-gray-400 mt-1">{label}</p>
     </div>
   );
 }
@@ -71,7 +71,7 @@ export default async function LeadDetailPage({
 
   if (!lead) {
     return (
-      <main className="min-h-screen bg-f10-bg flex flex-col items-center justify-center">
+      <main className="min-h-screen bg-f10-bg flex flex-col items-center justify-center min-h-screen">
         <p className="font-body text-gray-400">Unable to load lead details. Please go back and try again.</p>
         <Link href="/" className="mt-4 font-body text-sm text-f10-primary hover:underline">
           Back to search
@@ -85,7 +85,7 @@ export default async function LeadDetailPage({
   return (
     <main className="min-h-screen bg-f10-bg flex flex-col">
       {/* Header */}
-      <header className="w-full border-b border-f10-border bg-white px-8 py-5 flex items-center justify-between">
+      <header className="w-full border-b border-f10-border bg-f10-tint px-8 py-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-f10-primary flex items-center justify-center">
             <span className="text-white text-xs font-body font-semibold">F10</span>
@@ -113,7 +113,7 @@ export default async function LeadDetailPage({
             {lead.rating > 0 && (
               <>
                 <StarRating rating={lead.rating} />
-                <span className="font-body text-sm text-gray-500">
+                <span className="font-body text-sm text-gray-400">
                   {lead.rating.toFixed(1)} ({lead.reviewCount.toLocaleString()} reviews)
                 </span>
               </>
@@ -129,7 +129,7 @@ export default async function LeadDetailPage({
         </div>
 
         {/* Contact info */}
-        <div className="bg-white rounded-f10 border border-f10-border p-6 mb-6">
+        <div className="bg-f10-tint rounded-f10 border border-f10-border p-6 mb-6">
           <h2 className="font-heading text-xl font-semibold text-f10-text mb-4">Contact Information</h2>
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -137,14 +137,14 @@ export default async function LeadDetailPage({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span className="font-body text-sm text-gray-600">{lead.address}</span>
+              <span className="font-body text-sm text-gray-400">{lead.address}</span>
             </div>
             {lead.phone && (
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-f10-primary shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span className="font-body text-sm text-gray-600">{lead.phone}</span>
+                <span className="font-body text-sm text-gray-400">{lead.phone}</span>
               </div>
             )}
             {lead.website && (
@@ -168,24 +168,24 @@ export default async function LeadDetailPage({
 
         {/* Business snapshot */}
         {lead.snapshot && (
-          <div className="bg-white rounded-f10 border border-f10-border p-6 mb-6">
+          <div className="bg-f10-tint rounded-f10 border border-f10-border p-6 mb-6">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-5 h-5 rounded-full bg-f10-primary flex items-center justify-center">
                 <span className="text-white text-[9px] font-semibold">AI</span>
               </div>
               <h2 className="font-heading text-xl font-semibold text-f10-text">Business Snapshot</h2>
             </div>
-            <p className="font-body text-sm text-gray-600 leading-relaxed">{lead.snapshot}</p>
+            <p className="font-body text-sm text-gray-400 leading-relaxed">{lead.snapshot}</p>
           </div>
         )}
 
         {/* Hours */}
         {lead.hours.length > 0 && (
-          <div className="bg-white rounded-f10 border border-f10-border p-6 mb-8">
+          <div className="bg-f10-tint rounded-f10 border border-f10-border p-6 mb-8">
             <h2 className="font-heading text-xl font-semibold text-f10-text mb-4">Business Hours</h2>
             <ul className="space-y-1.5">
               {lead.hours.map((h, i) => (
-                <li key={i} className="font-body text-sm text-gray-600">{h}</li>
+                <li key={i} className="font-body text-sm text-gray-400">{h}</li>
               ))}
             </ul>
           </div>

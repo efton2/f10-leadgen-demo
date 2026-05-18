@@ -3,12 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --f10-primary: #4A6FA5;
-  --f10-bg: #FAFAF7;
-  --f10-tint: #EEF2F7;
-  --f10-text: #1F2937;
-  --f10-footer: #F7F9FC;
-  --f10-border: #D1DCF0;
+  --f10-primary: #E8A020;
+  --f10-bg: #0A1520;
+  --f10-tint: #162C42;
+  --f10-text: #F5EFE6;
+  --f10-footer: #060D16;
+  --f10-border: #264766;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 body {

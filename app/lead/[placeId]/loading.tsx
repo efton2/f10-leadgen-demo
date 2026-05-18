@@ -8,7 +8,7 @@ export default function LeadDetailLoading() {
             <span className="text-white text-xs font-body font-semibold">F10</span>
           </div>
           <span className="font-heading text-xl font-semibold text-f10-text tracking-wide">
-            AI Operator Systems
+            Simporic
           </span>
         </div>
         <div className="h-4 w-24 bg-f10-tint rounded animate-pulse" />
@@ -95,7 +95,7 @@ export default function LeadDetailLoading() {
       {/* Footer */}
       <footer className="bg-f10-footer border-t border-f10-border px-8 py-5 text-center">
         <p className="font-body text-xs text-gray-400">
-          Function 10 Media LLC &nbsp;&bull;&nbsp; AI Operator Systems Demo
+          Simporic
         </p>
       </footer>
     </main>

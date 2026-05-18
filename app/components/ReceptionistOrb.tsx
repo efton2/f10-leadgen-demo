@@ -85,7 +85,7 @@ export default function ReceptionistOrb({ name, niche, phone }: Props) {
   const isConnecting = orbState === "connecting";
 
   return (
-    <div className="bg-white rounded-f10 border border-f10-border p-8 flex flex-col items-center gap-6">
+    <div className="bg-f10-bg rounded-f10 border border-f10-border p-8 flex flex-col items-center gap-6">
       <div className="flex items-center gap-2">
         <div className="w-5 h-5 rounded-full bg-f10-primary flex items-center justify-center">
           <span className="text-white text-[9px] font-semibold">AI</span>
@@ -98,7 +98,7 @@ export default function ReceptionistOrb({ name, niche, phone }: Props) {
         onClick={isActive ? stop : start}
         disabled={isConnecting}
         aria-label={isActive ? "End call" : "Start call"}
-        className="relative w-28 h-28 rounded-full focus:outline-none disabled:cursor-not-allowed"
+        className="relative w-28 h-28 rounded-full focus:outline-none disabled:cursor-not-allowed active:scale-[0.97] transition-transform [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150"
       >
         {isActive && (
           <>
@@ -107,14 +107,14 @@ export default function ReceptionistOrb({ name, niche, phone }: Props) {
           </>
         )}
         <span
-          className={`absolute inset-0 rounded-full flex items-center justify-center transition-all duration-300 ${
+          className={`absolute inset-0 rounded-full flex items-center justify-center transition-[background-color,box-shadow] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] ${
             isConnecting
-              ? "bg-gray-300 animate-pulse"
+              ? "bg-gray-600 [animation:pulse_1.5s_cubic-bezier(0.23,1,0.32,1)_infinite] opacity-70"
               : isActive
               ? "bg-f10-primary shadow-lg shadow-f10-primary/40"
               : orbState === "error"
               ? "bg-red-400"
-              : "bg-f10-primary hover:bg-[#3d5e8e] hover:shadow-lg hover:shadow-f10-primary/30"
+              : "bg-f10-primary hover:bg-[#C8870A] hover:shadow-lg hover:shadow-f10-primary/30"
           }`}
         >
           {isActive ? (
