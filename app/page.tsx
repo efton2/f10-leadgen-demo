@@ -129,7 +129,7 @@ export default function Home() {
               type="text"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="City"
+              placeholder="City or zip"
               className="w-full sm:w-36 font-body text-sm bg-f10-bg text-f10-text border border-f10-border rounded-f10 px-4 py-3 focus:outline-none focus:border-f10-primary transition-colors placeholder:text-gray-600"
             />
             <button
