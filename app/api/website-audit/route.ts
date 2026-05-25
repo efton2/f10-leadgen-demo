@@ -6,45 +6,139 @@ export const maxDuration = 300;
 const APIFY_TOKEN = process.env.APIFY_TOKEN!;
 const anthropic = new Anthropic({ apiKey: process.env.F10_ANTHROPIC_KEY });
 
-// ── Apify helpers ─────────────────────────────────────────────────────────────
+// ── URL helpers ───────────────────────────────────────────────────────────────
 
-async function runApifyActor(actorId: string, input: object): Promise<unknown[]> {
-  const runRes = await fetch(
-    `https://api.apify.com/v2/acts/${actorId}/runs?token=${APIFY_TOKEN}`,
-    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) }
-  );
-  if (!runRes.ok) return [];
-  const { data: run } = await runRes.json();
-  const runId: string = run.id;
-
-  for (let i = 0; i < 48; i++) {
-    await new Promise((r) => setTimeout(r, 2500));
-    const statusRes = await fetch(
-      `https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${APIFY_TOKEN}`
-    );
-    const { data: status } = await statusRes.json();
-    if (["SUCCEEDED", "FAILED", "ABORTED"].includes(status.status)) {
-      const itemsRes = await fetch(
-        `https://api.apify.com/v2/datasets/${status.defaultDatasetId}/items?token=${APIFY_TOKEN}`
-      );
-      return itemsRes.ok ? itemsRes.json() : [];
-    }
+function cleanUrl(raw: string): string {
+  try {
+    const u = new URL(raw.startsWith("http") ? raw : `https://${raw}`);
+    // Strip UTM and tracking params
+    ["utm_source","utm_medium","utm_campaign","utm_term","utm_content",
+     "fbclid","gclid","msclkid","ref","source","mc_cid","mc_eid"].forEach(p => u.searchParams.delete(p));
+    return u.origin + u.pathname.replace(/\/$/, "") || u.origin;
+  } catch {
+    return raw;
   }
-  return [];
 }
 
-async function scrapeWebsite(url: string): Promise<string> {
-  try {
-    const items = await runApifyActor("apify~website-content-crawler", {
-      startUrls: [{ url }],
-      maxCrawlPages: 5,
-      crawlerType: "cheerio",
-      maxCrawlDepth: 1,
-    }) as Record<string, unknown>[];
-    return items.map((i) => `[PAGE: ${i.url}]\n${i.text ?? ""}`).join("\n\n").slice(0, 8000);
-  } catch {
-    return "";
+function extractInternalLinks(html: string, origin: string): string[] {
+  const hrefs = Array.from(html.matchAll(/href=["']([^"']+)["']/gi)).map(m => m[1]);
+  const priority = ["services","treatment","about","pricing","price","contact","menu","procedures","specials","offer"];
+  const seen = new Set<string>();
+  const links: string[] = [];
+
+  for (const href of hrefs) {
+    try {
+      const url = new URL(href, origin);
+      if (url.origin !== origin) continue;
+      const path = url.pathname.toLowerCase();
+      if (path === "/" || path === "") continue;
+      const key = url.origin + url.pathname;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      links.push(key);
+    } catch { /* skip */ }
   }
+
+  // Sort: priority paths first, then rest
+  links.sort((a, b) => {
+    const aScore = priority.findIndex(k => a.toLowerCase().includes(k));
+    const bScore = priority.findIndex(k => b.toLowerCase().includes(k));
+    const aP = aScore === -1 ? 99 : aScore;
+    const bP = bScore === -1 ? 99 : bScore;
+    return aP - bP;
+  });
+
+  return links.slice(0, 5);
+}
+
+function htmlToText(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim()
+    .slice(0, 3000);
+}
+
+async function fetchPage(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+      },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return null;
+    const ct = res.headers.get("content-type") ?? "";
+    if (!ct.includes("html")) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
+}
+
+// ── Apify fallback ────────────────────────────────────────────────────────────
+
+async function apifyFallback(url: string): Promise<string> {
+  try {
+    const runRes = await fetch(
+      `https://api.apify.com/v2/acts/apify~website-content-crawler/runs?token=${APIFY_TOKEN}`,
+      { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startUrls: [{ url }], maxCrawlPages: 5, crawlerType: "cheerio", maxCrawlDepth: 1 }) }
+    );
+    if (!runRes.ok) return "";
+    const { data: run } = await runRes.json();
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 3000));
+      const s = await fetch(`https://api.apify.com/v2/acts/apify~website-content-crawler/runs/${run.id}?token=${APIFY_TOKEN}`);
+      const { data: status } = await s.json();
+      if (["SUCCEEDED","FAILED","ABORTED"].includes(status.status)) {
+        const d = await fetch(`https://api.apify.com/v2/datasets/${status.defaultDatasetId}/items?token=${APIFY_TOKEN}`);
+        if (!d.ok) return "";
+        const items = await d.json() as Record<string,unknown>[];
+        return items.map(i => `[PAGE: ${i.url}]\n${i.text ?? ""}`).join("\n\n").slice(0, 8000);
+      }
+    }
+  } catch { /* fall through */ }
+  return "";
+}
+
+// ── Hybrid scraper ────────────────────────────────────────────────────────────
+
+async function scrapeWebsite(rawUrl: string): Promise<{ content: string; method: string }> {
+  const base = cleanUrl(rawUrl);
+  const origin = new URL(base.startsWith("http") ? base : `https://${base}`).origin;
+
+  // 1. Fetch homepage directly
+  const homepageHtml = await fetchPage(base.startsWith("http") ? base : `https://${base}`);
+
+  if (!homepageHtml) {
+    // Direct fetch blocked — fall back to Apify
+    const content = await apifyFallback(base);
+    return { content, method: "apify-fallback" };
+  }
+
+  const homepageText = `[PAGE: ${base}]\n${htmlToText(homepageHtml)}`;
+
+  // 2. Extract internal links from homepage, fetch priority pages
+  const internalLinks = extractInternalLinks(homepageHtml, origin);
+  const subpageTexts: string[] = [];
+
+  await Promise.all(
+    internalLinks.slice(0, 4).map(async (link) => {
+      const html = await fetchPage(link);
+      if (html) subpageTexts.push(`[PAGE: ${link}]\n${htmlToText(html)}`);
+    })
+  );
+
+  const all = [homepageText, ...subpageTexts].join("\n\n");
+  return {
+    content: all.slice(0, 10000),
+    method: `direct (${1 + subpageTexts.length} pages)`,
+  };
 }
 
 // ── Claude audit ─────────────────────────────────────────────────────────────
@@ -292,15 +386,16 @@ export async function POST(req: NextRequest) {
 
       try {
         send({ type: "step", step: "fetch", status: "active" });
-        send({ type: "log", msg: `Crawling ${website}...` });
+        send({ type: "log", msg: `Fetching ${cleanUrl(website)}...` });
 
-        const websiteContent = await scrapeWebsite(website);
+        const { content: websiteContent, method: scrapeMethod } = await scrapeWebsite(website);
 
         send({ type: "step", step: "fetch", status: "done" });
+        send({ type: "log", msg: `Scraped via ${scrapeMethod}` });
         send({ type: "step", step: "analyze", status: "active" });
         send({ type: "log", msg: "Running AI analysis across 5 dimensions..." });
 
-        const audit = await runAudit(business_name, website, websiteContent);
+        const audit = await runAudit(business_name, cleanUrl(website), websiteContent);
 
         send({ type: "step", step: "analyze", status: "done" });
         send({ type: "step", step: "score", status: "active" });
@@ -312,7 +407,7 @@ export async function POST(req: NextRequest) {
         send({ type: "step", step: "build", status: "active" });
         send({ type: "log", msg: "Building PDF report..." });
 
-        const html = buildAuditHtml(business_name, website, audit);
+        const html = buildAuditHtml(business_name, cleanUrl(website), audit);
 
         send({ type: "step", step: "build", status: "done" });
         send({ type: "done", html, score: audit.overall_score });
