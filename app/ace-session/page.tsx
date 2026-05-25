@@ -97,10 +97,10 @@ function AceOrbInner() {
           <span className="text-[#0D1B2A] text-sm font-bold tracking-wider">ACE</span>
         </div>
         <h1 className="text-white text-2xl font-semibold tracking-wide" style={{ fontFamily: "Cormorant Garamond, Georgia, serif" }}>
-          ACE Sales Closer
+          AI Consultation Expert
         </h1>
         <p className="text-amber-400/70 text-xs font-mono uppercase tracking-widest">
-          Praeco Intelligence Session
+          Your personalized AI advisor
         </p>
       </div>
 
@@ -143,15 +143,15 @@ function AceOrbInner() {
       {/* Status */}
       <div className="text-center">
         <p className="text-white/80 text-sm font-mono">
-          {orbState === "idle" && "Tap to start the ACE session"}
-          {orbState === "connecting" && "Connecting ACE..."}
-          {orbState === "listening" && "ACE is listening"}
-          {orbState === "speaking" && "ACE is speaking"}
+          {orbState === "idle" && "Tap to start your consultation"}
+          {orbState === "connecting" && "Connecting your advisor..."}
+          {orbState === "listening" && "Your advisor is listening"}
+          {orbState === "speaking" && "Your advisor is speaking"}
           {orbState === "error" && "Connection failed — tap to retry"}
         </p>
         {isActive && (
           <p className="text-amber-400/60 text-xs mt-2 font-mono">
-            Loaded with competitive intelligence for {clientName}
+            Consultation personalized for {clientName}
           </p>
         )}
       </div>
@@ -159,9 +159,9 @@ function AceOrbInner() {
       {/* Intel badge */}
       {!sessionEnded && (
         <div className="border border-amber-400/20 rounded-lg px-5 py-3 text-center max-w-xs">
-          <p className="text-amber-400/80 text-xs font-mono uppercase tracking-wider mb-1">Intelligence Active</p>
+          <p className="text-amber-400/80 text-xs font-mono uppercase tracking-wider mb-1">Advisor Ready</p>
           <p className="text-white/50 text-xs">
-            Competitive market data for {clientName} is loaded and ready.
+            Your consultation has been personalized for {clientName}.
           </p>
         </div>
       )}

@@ -418,7 +418,7 @@ export default function ProofStack({ name, niche, searchNiche, phone, address }:
       <div className="bg-f10-tint rounded-f10 border border-f10-border p-6 animate-fade-up [animation-delay:160ms]">
         <SectionHeader
           num="03"
-          title="ACE Sales Closer"
+          title="AI Consultation Expert"
           status={aceOpened || aceCopied ? "done" : "idle"}
         />
         <p className="font-body text-sm text-gray-400 mb-5">
@@ -435,7 +435,7 @@ export default function ProofStack({ name, niche, searchNiche, phone, address }:
             disabled={aceLoading}
             className="flex-1 py-3 rounded-lg bg-f10-primary text-white font-body text-sm font-semibold hover:bg-[#C8870A] active:scale-[0.97] transition-[transform,background-color] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {aceLoading ? "Loading ACE..." : reportHtml ? "Open ACE (with intel)" : "Open ACE"}
+            {aceLoading ? "Connecting..." : reportHtml ? "Start Consultation (intel loaded)" : "Start Consultation"}
           </button>
           <button
             onClick={copyAceLink}
