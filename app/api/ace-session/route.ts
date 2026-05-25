@@ -117,7 +117,7 @@ Be confident, specific, and direct. You already know their market. You are the c
           language: "en",
         },
         tts: {
-          voice_id: "ZT9u07TYPVl83ejeLakq",
+          voice_id: "6NysKOMB6eafA6NVQBLh",
         },
       },
     }),
