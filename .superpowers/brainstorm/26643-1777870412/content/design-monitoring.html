@@ -1,0 +1,63 @@
+<h2>Design — Section 4 of 4: Error Handling & Monitoring</h2>
+<p class="subtitle">What happens when something breaks — and how you find out before the client does.</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;">
+
+  <!-- What can break -->
+  <div style="background:#F7F9FC;border:1px solid #E2E8F0;border-radius:8px;padding:16px;">
+    <div style="font-family:Georgia,serif;font-weight:600;color:#1C1917;font-size:13px;margin-bottom:10px;">What Can Break</div>
+    <div style="font-size:11px;color:#374151;line-height:1.9;">
+      <div style="display:flex;gap:8px;margin-bottom:4px;"><span>🔍</span><span><strong>Google Places API</strong> — quota hit or key expired. Lead search returns empty.</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px;"><span>🤖</span><span><strong>ElevenLabs agent</strong> — voice demo fails to launch or disconnects mid-call.</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px;"><span>📨</span><span><strong>Resend email</strong> — proposal fails to send. Client never gets the follow-up.</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px;"><span>🗄️</span><span><strong>Supabase</strong> — write fails. Lead status not saved. Pipeline out of sync.</span></div>
+      <div style="display:flex;gap:8px;"><span>⚙️</span><span><strong>Revenue Rescue n8n</strong> — client's follow-up workflow stalls. Leads fall through.</span></div>
+    </div>
+  </div>
+
+  <!-- How we catch it -->
+  <div style="background:#F7F9FC;border:1px solid #E2E8F0;border-radius:8px;padding:16px;">
+    <div style="font-family:Georgia,serif;font-weight:600;color:#1C1917;font-size:13px;margin-bottom:10px;">How We Catch It</div>
+    <div style="font-size:11px;color:#374151;line-height:1.9;">
+      <div style="display:flex;gap:8px;margin-bottom:4px;"><span>📱</span><span><strong>Telegram alerts via VERA</strong> — any API error or n8n failure pings you immediately.</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px;"><span>📋</span><span><strong>Vercel logs</strong> — every API route error is captured. Review after any report of a problem.</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px;"><span>🗄️</span><span><strong>Supabase dashboard</strong> — live table view to confirm data is writing correctly.</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px;"><span>⚙️</span><span><strong>n8n execution log</strong> — every workflow run is logged. Failed runs are visible immediately.</span></div>
+      <div style="display:flex;gap:8px;"><span>👀</span><span><strong>30-day concierge window</strong> — for clients 1–5, Efton manually checks their workflow weekly.</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Response protocol -->
+<div style="background:#1C1917;color:white;border-radius:8px;padding:16px 18px;margin-bottom:16px;">
+  <div style="font-family:Georgia,serif;font-size:13px;color:#F59E0B;font-weight:600;margin-bottom:10px;">When Something Breaks — The Protocol</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+    <div style="font-size:11px;color:#D1D5DB;line-height:1.7;">
+      <strong style="color:white;">Step 1 — Contain</strong><br>
+      Is the client affected right now? If yes, pause their workflow in n8n immediately. Send a manual message to cover the gap. Do not wait to diagnose first.
+    </div>
+    <div style="font-size:11px;color:#D1D5DB;line-height:1.7;">
+      <strong style="color:white;">Step 2 — Diagnose</strong><br>
+      Check Vercel logs, n8n execution log, and Supabase table in that order. Identify which layer failed. Efton + Claude Code investigate and fix.
+    </div>
+    <div style="font-size:11px;color:#D1D5DB;line-height:1.7;">
+      <strong style="color:white;">Step 3 — Document</strong><br>
+      Add the failure to the runbook. What broke, what caused it, what fixed it. This becomes the first entry in the automation monitoring spec.
+    </div>
+  </div>
+</div>
+
+<!-- Client SLA -->
+<div style="background:#EEF2F7;border:1px solid #CBD5E1;border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+  <div style="font-family:Georgia,serif;font-weight:600;color:#1C1917;font-size:13px;margin-bottom:6px;">What You Tell Clients</div>
+  <p style="font-size:11px;color:#374151;margin:0;line-height:1.7;">
+    During the concierge period: "I personally monitor your system weekly and am available if anything needs attention." That is the service level commitment — not a 99.9% uptime guarantee. It is a human backstop, which is actually more reassuring to a small business owner than any SLA document.
+  </p>
+</div>
+
+<div style="background:#F0FDF4;border:1px solid #22C55E;border-radius:8px;padding:14px 18px;">
+  <p style="font-size:12px;color:#166534;margin:0;">
+    <strong>Does this look right?</strong> No new monitoring infrastructure needed in Tier 1. VERA already pings you on failures, n8n already logs every execution, Vercel already captures every error. The concierge window and the runbook documentation are the quality layer on top.
+  </p>
+</div>

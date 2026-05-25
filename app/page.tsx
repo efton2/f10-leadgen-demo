@@ -18,11 +18,11 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function LeadCard({ lead }: { lead: Lead }) {
+function LeadCard({ lead, searchNiche }: { lead: Lead; searchNiche: string }) {
   const niceType = lead.types[0]?.replace(/_/g, " ") ?? "Business";
   return (
     <Link
-      href={`/lead/${lead.placeId}`}
+      href={`/lead/${lead.placeId}?niche=${encodeURIComponent(searchNiche)}`}
       className="block bg-f10-tint rounded-f10 border border-f10-border p-5 hover:border-f10-primary hover:shadow-md hover:shadow-f10-primary/10 active:scale-[0.99] transition-[transform,border-color,box-shadow] [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] duration-150 group"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
@@ -155,7 +155,7 @@ export default function Home() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {leads.map((lead) => (
-                <LeadCard key={lead.placeId} lead={lead} />
+                <LeadCard key={lead.placeId} lead={lead} searchNiche={niche} />
               ))}
             </div>
           </>

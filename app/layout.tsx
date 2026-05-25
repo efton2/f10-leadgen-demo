@@ -18,8 +18,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "F10 AI Lead Gen",
-  description: "Find local businesses and deploy AI receptionists in minutes",
+  title: "F10 Strategy — Internal Sales Platform",
+  description: "F10 Strategy sales pipeline and client management.",
   icons: { icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>" },
 };
 

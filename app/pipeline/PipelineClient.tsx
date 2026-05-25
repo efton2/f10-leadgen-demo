@@ -38,6 +38,8 @@ interface PipelineLead {
   city: string;
   status: Status;
   notes: string;
+  source?: string;
+  scout_score?: number;
   created_at: string;
   updated_at: string;
 }
@@ -97,7 +99,7 @@ export default function PipelineClient({ initialLeads }: { initialLeads: Pipelin
           <tr>
             <th className="text-left px-4 py-3 text-gray-500 font-medium">Business</th>
             <th className="text-left px-4 py-3 text-gray-500 font-medium">City</th>
-            <th className="text-left px-4 py-3 text-gray-500 font-medium">Rating</th>
+            <th className="text-left px-4 py-3 text-gray-500 font-medium">Score</th>
             <th className="text-left px-4 py-3 text-gray-500 font-medium">Status</th>
             <th className="text-left px-4 py-3 text-gray-500 font-medium">Notes</th>
             <th className="text-left px-4 py-3 text-gray-500 font-medium">Actions</th>
@@ -107,17 +109,24 @@ export default function PipelineClient({ initialLeads }: { initialLeads: Pipelin
           {leads.map((lead) => (
             <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
               <td className="px-4 py-3">
-                <Link
-                  href={`/lead/${lead.place_id}`}
-                  className="text-f10-primary hover:underline font-medium"
-                >
-                  {lead.business_name}
-                </Link>
-                <div className="text-xs text-gray-400 mt-0.5">{lead.category}</div>
+                <div className="flex items-center gap-2">
+                  {lead.source === "scout" && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 shrink-0">SCOUT</span>
+                  )}
+                  <Link
+                    href={`/lead/${lead.place_id}${lead.category ? `?niche=${encodeURIComponent(lead.category)}` : ""}`}
+                    className="text-f10-primary hover:underline font-medium"
+                  >
+                    {lead.business_name}
+                  </Link>
+                </div>
+                <div className="text-xs text-gray-400 mt-0.5 ml-0">{lead.category || lead.address?.split(",")[1]?.trim()}</div>
               </td>
               <td className="px-4 py-3 text-gray-600">{lead.city}</td>
               <td className="px-4 py-3 text-gray-600">
-                {lead.rating > 0 ? `${lead.rating} (${lead.review_count})` : "—"}
+                {lead.source === "scout" && lead.scout_score != null
+                  ? <span className={`font-semibold ${lead.scout_score >= 7 ? "text-amber-600" : "text-blue-600"}`}>{lead.scout_score}/10</span>
+                  : lead.rating > 0 ? `${lead.rating}★ (${lead.review_count})` : "—"}
               </td>
               <td className="px-4 py-3">
                 <select

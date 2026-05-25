@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-05-25T14:54:57.201Z",
+  "source": "auto-postool",
+  "partial": false,
+  "phase": null,
+  "phase_name": null,
+  "phase_dir": null,
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "auto-checkpoint",
+  "completed_tasks": [],
+  "remaining_tasks": [],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [],
+  "uncommitted_files": [
+    {
+      "status": "M",
+      "path": "app/ace-session/page.tsx"
+    },
+    {
+      "status": "M",
+      "path": "app/api/competitive-analysis/route.ts"
+    },
+    {
+      "status": "M",
+      "path": "app/components/ProofStack.tsx"
+    },
+    {
+      "status": "M",
+      "path": "app/layout.tsx"
+    },
+    {
+      "status": "M",
+      "path": "app/lead/[placeId]/page.tsx"
+    },
+    {
+      "status": "M",
+      "path": "app/page.tsx"
+    },
+    {
+      "status": "M",
+      "path": "app/pipeline/PipelineClient.tsx"
+    },
+    {
+      "status": "M",
+      "path": "middleware.ts"
+    },
+    {
+      "status": "??",
+      "path": ".claude/"
+    },
+    {
+      "status": "??",
+      "path": ".env.local.bak"
+    },
+    {
+      "status": "??",
+      "path": ".planning/"
+    },
+    {
+      "status": "??",
+      "path": ".superpowers/"
+    },
+    {
+      "status": "??",
+      "path": "app/api/website-audit/"
+    },
+    {
+      "status": "??",
+      "path": "app/components/WebsiteAuditSection.tsx"
+    },
+    {
+      "status": "??",
+      "path": "docs/superpowers/plans/"
+    }
+  ],
+  "next_action": null,
+  "context_notes": "Recent commits:\nd368916 Add step-based progress tracker for competitive analysis\n6f2ddd1 Fix analysis timeout — raise maxDuration to 300s, halve poll interval\n3985894 Fix stat badge overflow on mobile — shrink font, clamp to 2 lines\n45e855e Auto-populate competitor fields from Google Places on page load\nc4568ad Update city field placeholder to \"City or zip\""
+}

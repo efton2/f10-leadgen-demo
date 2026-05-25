@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/api/auth/login"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/api/auth/login",
+  "/api/proof/retrieve",   // ElevenLabs webhook — no session cookie
+  "/api/receptionist",     // ElevenLabs session init — no session cookie
+  "/api/ace-session",      // ElevenLabs session — no session cookie
+];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

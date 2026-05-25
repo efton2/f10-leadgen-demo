@@ -62,21 +62,38 @@ async function runApifyActor(actorId: string, input: object): Promise<unknown[]>
   return [];
 }
 
+function nameMatchScore(input: string, result: string): number {
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, "");
+  const inp = norm(input);
+  const res = norm(result);
+  if (inp.includes(res) || res.includes(inp)) return 1;
+  const inpWords = inp.split(" ").filter(Boolean);
+  const resWords = res.split(" ").filter(Boolean);
+  if (!inpWords.length) return 0;
+  const resSet = new Set(resWords);
+  const shared = inpWords.filter((w) => resSet.has(w)).length;
+  return shared / inpWords.length;
+}
+
 async function scrapeGoogleMaps(name: string, market: string) {
   const items = await runApifyActor("nwua9Gu5YrADL7ZDj", {
     searchStringsArray: [`${name} ${market}`],
-    maxCrawledPlacesPerSearch: 1,
+    maxCrawledPlacesPerSearch: 5,
     language: "en",
     maxReviews: 0,
   }) as Record<string, unknown>[];
   if (!items.length) return { name, rating: null, review_count: null, address: null, website: null };
-  const p = items[0];
+
+  const best = items.reduce((a, b) =>
+    nameMatchScore(name, (b.title as string) ?? "") > nameMatchScore(name, (a.title as string) ?? "") ? b : a
+  );
+
   return {
-    name: (p.title as string) ?? name,
-    rating: p.totalScore ?? null,
-    review_count: p.reviewsCount ?? null,
-    address: p.address ?? null,
-    website: p.website ?? null,
+    name: (best.title as string) ?? name,
+    rating: best.totalScore ?? null,
+    review_count: best.reviewsCount ?? null,
+    address: best.address ?? null,
+    website: best.website ?? null,
   };
 }
 

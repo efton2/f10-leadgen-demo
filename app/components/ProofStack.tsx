@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import ReceptionistOrb from "./ReceptionistOrb";
 
 interface Props {
   name: string;
   niche: string;
+  searchNiche?: string;
   phone: string;
   address: string;
 }
@@ -94,45 +95,17 @@ function AnalysisProgress({ steps, log }: { steps: AnalysisSteps; log: string[] 
   );
 }
 
-export default function ProofStack({ name, niche, phone, address }: Props) {
+export default function ProofStack({ name, niche, searchNiche, phone, address }: Props) {
   // ── Competitive Analysis state ──────────────────────────────────────────────
   const city = address.split(",").slice(1, 3).join(",").trim();
   const [brand, setBrand] = useState("f10_strategy");
   const [market, setMarket] = useState(city);
   const [marketDisplay, setMarketDisplay] = useState(city);
   const [competitors, setCompetitors] = useState(["", "", "", "", ""]);
-  const [competitorsLoading, setCompetitorsLoading] = useState(true);
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus>("idle");
   const [steps, setSteps] = useState<AnalysisSteps>({});
   const [log, setLog] = useState<string[]>([]);
   const [reportHtml, setReportHtml] = useState<string | null>(null);
-
-  // Auto-populate competitors from Google Places on mount
-  useEffect(() => {
-    async function fetchCompetitors() {
-      try {
-        const res = await fetch("/api/leads", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ niche, city }),
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        const names: string[] = (data.leads as Array<{ name: string }>)
-          .filter((l) => l.name.toLowerCase() !== name.toLowerCase())
-          .slice(0, 5)
-          .map((l) => l.name);
-        if (names.length > 0) {
-          setCompetitors([...names, ...Array(5 - names.length).fill("")].slice(0, 5));
-        }
-      } catch {
-        // leave empty — user can fill manually
-      } finally {
-        setCompetitorsLoading(false);
-      }
-    }
-    fetchCompetitors();
-  }, [niche, city, name]);
 
   // ── Receptionist state ──────────────────────────────────────────────────────
   const [receptionistUsed, setReceptionistUsed] = useState(false);
@@ -142,9 +115,36 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
   const [aceLoading, setAceLoading] = useState(false);
   const [aceOpened, setAceOpened] = useState(false);
 
+  const [loadingCompetitors, setLoadingCompetitors] = useState(false);
+  const [competitorSearchError, setCompetitorSearchError] = useState("");
+
   const updateCompetitor = (i: number, val: string) => {
     setCompetitors((prev) => prev.map((c, idx) => (idx === i ? val : c)));
   };
+
+  const searchCompetitors = useCallback(async () => {
+    setLoadingCompetitors(true);
+    setCompetitorSearchError("");
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ niche: searchNiche ?? niche, city: market }),
+      });
+      if (!res.ok) throw new Error("Search failed");
+      const data = await res.json();
+      const names: string[] = (data.leads ?? []).slice(0, 5).map((l: { name: string }) => l.name);
+      if (names.length === 0) {
+        setCompetitorSearchError("No results — try editing the Search Market field and searching again.");
+      } else {
+        setCompetitors([...names, ...Array(5 - names.length).fill("")]);
+      }
+    } catch {
+      setCompetitorSearchError("Search failed — check your connection and try again.");
+    } finally {
+      setLoadingCompetitors(false);
+    }
+  }, [niche, searchNiche, market]);
 
   const openReport = useCallback(() => {
     if (!reportHtml) return;
@@ -342,32 +342,28 @@ export default function ProofStack({ name, niche, phone, address }: Props) {
             <label className="block font-body text-xs uppercase tracking-wider text-gray-400">
               Competitors (up to 5)
             </label>
-            {competitorsLoading && (
-              <span className="font-body text-xs text-gray-600 animate-pulse">Finding nearby competitors...</span>
-            )}
+            <button
+              onClick={searchCompetitors}
+              disabled={loadingCompetitors || analysisStatus === "running"}
+              className="font-body text-xs text-f10-primary hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {loadingCompetitors ? "Searching..." : "Search market"}
+            </button>
           </div>
-          {competitorsLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="font-body text-xs text-f10-primary font-semibold w-4">{i + 1}</span>
-                  <div className="flex-1 h-9 bg-f10-bg rounded-lg animate-pulse" />
-                </div>
-              ))}
+          {competitors.map((c, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <span className="font-body text-xs text-f10-primary font-semibold w-4">{i + 1}</span>
+              <input
+                type="text"
+                value={c}
+                onChange={(e) => updateCompetitor(i, e.target.value)}
+                placeholder="Competitor name"
+                className="flex-1 border border-f10-border bg-f10-bg text-f10-text rounded-lg px-3 py-2 font-body text-sm focus:outline-none focus:border-f10-primary placeholder:text-gray-600"
+              />
             </div>
-          ) : (
-            competitors.map((c, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span className="font-body text-xs text-f10-primary font-semibold w-4">{i + 1}</span>
-                <input
-                  type="text"
-                  value={c}
-                  onChange={(e) => updateCompetitor(i, e.target.value)}
-                  placeholder="Competitor name"
-                  className="flex-1 border border-f10-border bg-f10-bg text-f10-text rounded-lg px-3 py-2 font-body text-sm focus:outline-none focus:border-f10-primary placeholder:text-gray-600"
-                />
-              </div>
-            ))
+          ))}
+          {competitorSearchError && (
+            <p className="font-body text-xs text-amber-400 pt-1">{competitorSearchError}</p>
           )}
         </div>
 

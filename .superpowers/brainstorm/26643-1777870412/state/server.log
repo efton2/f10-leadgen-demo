@@ -1,0 +1,17 @@
+{"type":"server-started","port":63904,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:63904","screen_dir":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content","state_dir":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/state"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/platform-tiers.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/full-pipeline.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/brand-question.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/council-verdict.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/go-to-market.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/sales-approach.html"}
+{"source":"user-event","type":"click","text":"C\n    \n      Live Demo Link (Send and Let ACE Close)\n      Search their business in the lead gen tool, copy their unique demo link, and send it via email, DM, or text with a single line: \"Built this for your business — take a look.\" They click, see their own data, interact with the AI. ACE follows up if they engage but do not book. Fully automated after the send.\n      Best for: Maximum scale. 50+ outreaches a day. Lowest touch, highest volume.","choice":"live-link","id":null,"timestamp":1777872992324}
+{"source":"user-event","type":"click","text":"A\n    \n      Walk-In (In-Person)\n      You or Sabrina physically walk into target businesses in your area. Pull up the demo on a tablet or laptop. Show them their own business in the system — live, on the spot. The shock factor alone closes rooms. No cold call, no email campaign. Just show up with their data already loaded.\n      Best for: Dentists, HVAC, salons, law firms — any local business with a physical location. High close rate. Slower volume.","choice":"walk-in","id":null,"timestamp":1777872995885}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/build-approach.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/build-council.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/testing-council.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/design-arch.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/design-dataflow.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/design-tier1.html"}
+{"type":"screen-added","file":"/Users/eftongeary/f10-leadgen-demo/.superpowers/brainstorm/26643-1777870412/content/design-monitoring.html"}
+{"type":"server-stopped","reason":"idle timeout"}

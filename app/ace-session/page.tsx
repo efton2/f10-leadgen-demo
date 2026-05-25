@@ -14,7 +14,9 @@ function AceOrbInner() {
   const clientName = searchParams.get("clientName") ?? "this prospect";
 
   const [orbState, setOrbState] = useState<OrbState>("idle");
+  const [sessionEnded, setSessionEnded] = useState(false);
   const sessionRef = useRef<Session | null>(null);
+  const wasActiveRef = useRef(false);
 
   // Auto-prompt mic on mount so the user just taps the orb
   useEffect(() => {
@@ -26,9 +28,15 @@ function AceOrbInner() {
     setOrbState("connecting");
 
     const callbacks = {
-      onConnect: () => setOrbState("listening"),
+      onConnect: () => {
+        wasActiveRef.current = true;
+        setOrbState("listening");
+      },
       onDisconnect: () => {
         sessionRef.current = null;
+        if (wasActiveRef.current) {
+          setSessionEnded(true);
+        }
         setOrbState("idle");
       },
       onModeChange: ({ mode }: { mode: "speaking" | "listening" }) =>
@@ -64,6 +72,9 @@ function AceOrbInner() {
   const stop = useCallback(async () => {
     await sessionRef.current?.endSession();
     sessionRef.current = null;
+    if (wasActiveRef.current) {
+      setSessionEnded(true);
+    }
     setOrbState("idle");
   }, []);
 
@@ -146,12 +157,33 @@ function AceOrbInner() {
       </div>
 
       {/* Intel badge */}
-      <div className="border border-amber-400/20 rounded-lg px-5 py-3 text-center max-w-xs">
-        <p className="text-amber-400/80 text-xs font-mono uppercase tracking-wider mb-1">Intelligence Active</p>
-        <p className="text-white/50 text-xs">
-          Competitive market data for {clientName} is loaded and ready.
-        </p>
-      </div>
+      {!sessionEnded && (
+        <div className="border border-amber-400/20 rounded-lg px-5 py-3 text-center max-w-xs">
+          <p className="text-amber-400/80 text-xs font-mono uppercase tracking-wider mb-1">Intelligence Active</p>
+          <p className="text-white/50 text-xs">
+            Competitive market data for {clientName} is loaded and ready.
+          </p>
+        </div>
+      )}
+
+      {/* Post-session booking CTA */}
+      {sessionEnded && (
+        <div className="border border-amber-400/30 rounded-xl px-6 py-6 text-center max-w-sm bg-amber-400/5">
+          <p className="text-amber-400 text-xs font-mono uppercase tracking-widest mb-3">Your Next Step</p>
+          <h2 className="text-white text-xl font-semibold mb-2" style={{ fontFamily: "Cormorant Garamond, Georgia, serif" }}>
+            Your audit call is ready to book.
+          </h2>
+          <p className="text-white/40 text-xs mb-5">3 slots available this week.</p>
+          <a
+            href="https://calendly.com/eftongeary/book-your-audit-call"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-amber-400 text-[#0D1B2A] font-semibold text-sm px-6 py-3 rounded-full hover:bg-amber-300 transition-colors"
+          >
+            Book Your Free AI Audit Call →
+          </a>
+        </div>
+      )}
     </div>
   );
 }

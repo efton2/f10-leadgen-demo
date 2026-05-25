@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getLeadDetail } from "@/app/lib/getLeadDetail";
 import ProofStack from "@/app/components/ProofStack";
+import WebsiteAuditSection from "@/app/components/WebsiteAuditSection";
 import { supabase } from "@/lib/supabase";
 
 function StatBadge({ label, value }: { label: string; value: string }) {
@@ -40,15 +41,17 @@ export async function generateMetadata({
   const lead = await getLeadDetail(params.placeId);
   if (!lead) return { title: "Lead Not Found" };
   return {
-    title: `${lead.name} — F10 AI Lead Gen`,
+    title: `${lead.name} — F10 Strategy`,
     description: `AI Receptionist proposal for ${lead.name} in ${lead.address.split(",")[1]?.trim() ?? "your area"}.`,
   };
 }
 
 export default async function LeadDetailPage({
   params,
+  searchParams,
 }: {
   params: { placeId: string };
+  searchParams: { niche?: string };
 }) {
   const lead = await getLeadDetail(params.placeId);
 
@@ -80,7 +83,8 @@ export default async function LeadDetailPage({
     );
   }
 
-  const niceType = lead.types[0]?.replace(/_/g, " ") ?? "Business";
+  const GENERIC_TYPES = new Set(["establishment", "point_of_interest", "health", "food", "store", "finance", "local_government_office"]);
+  const niceType = (lead.types.find((t) => !GENERIC_TYPES.has(t)) ?? lead.types[0] ?? "business").replace(/_/g, " ");
 
   return (
     <main className="min-h-screen bg-f10-bg flex flex-col">
@@ -191,10 +195,19 @@ export default async function LeadDetailPage({
           </div>
         )}
 
+        {/* Website Audit — fires before proposal */}
+        {lead.website && (
+          <WebsiteAuditSection
+            businessName={lead.name}
+            website={lead.website}
+          />
+        )}
+
         {/* Proof Stack — Competitive Analysis + Receptionist + ACE */}
         <ProofStack
           name={lead.name}
           niche={niceType}
+          searchNiche={searchParams.niche ?? niceType}
           phone={lead.phone}
           address={lead.address}
         />

@@ -1,0 +1,73 @@
+<h2>Design — Section 3 of 4: Tier 1 Components</h2>
+<p class="subtitle">Exactly what gets built in week 1. Nothing more, nothing less.</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;">
+
+  <!-- Component 1: Auth -->
+  <div style="background:#F7F9FC;border:1px solid #E2E8F0;border-radius:8px;padding:16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="background:#4A6FA5;color:white;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;">COMPONENT 1</div>
+      <div style="font-family:Georgia,serif;font-weight:600;color:#1C1917;font-size:13px;">Login / Auth</div>
+    </div>
+    <div style="font-size:11px;color:#374151;line-height:1.7;">
+      Simple password-protected login page at <strong>app.f10strategy.com</strong>. Only Efton (and eventually team members) can access. Uses NextAuth or a hardcoded env-var password to start — no database accounts needed yet.<br><br>
+      <strong>Why simple:</strong> You do not need user management in Tier 1. One password. One tool. Upgrade to Supabase auth in Tier 2 when reps need their own logins.
+    </div>
+  </div>
+
+  <!-- Component 2: Pipeline CRM -->
+  <div style="background:#F7F9FC;border:1px solid #E2E8F0;border-radius:8px;padding:16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="background:#4A6FA5;color:white;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;">COMPONENT 2</div>
+      <div style="font-family:Georgia,serif;font-weight:600;color:#1C1917;font-size:13px;">Lead Pipeline View</div>
+    </div>
+    <div style="font-size:11px;color:#374151;line-height:1.7;">
+      A simple table or kanban board showing all leads by status: <strong>New → Reviewed → Demoed → Proposal Sent → Closed → Active</strong>.<br><br>
+      Click any lead to open their full profile. Update status with one click. Notes field for anything Efton wants to remember about the prospect. Saves to Supabase.
+    </div>
+  </div>
+
+  <!-- Component 3: Client Records -->
+  <div style="background:#F7F9FC;border:1px solid #E2E8F0;border-radius:8px;padding:16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="background:#4A6FA5;color:white;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;">COMPONENT 3</div>
+      <div style="font-family:Georgia,serif;font-weight:600;color:#1C1917;font-size:13px;">Client Records</div>
+    </div>
+    <div style="font-size:11px;color:#374151;line-height:1.7;">
+      When a lead is marked <strong>Closed</strong>, a client record is created. Tracks: business name, contact info, SKU (DFY/DWY), payment status, provisioning status, go-live date, monthly metrics.<br><br>
+      This is Efton's source of truth for every active client. Who is live, what they are paying, and when their next check-in is.
+    </div>
+  </div>
+
+  <!-- Component 4: Subdomain -->
+  <div style="background:#F7F9FC;border:1px solid #E2E8F0;border-radius:8px;padding:16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="background:#4A6FA5;color:white;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;">COMPONENT 4</div>
+      <div style="font-family:Georgia,serif;font-weight:600;color:#1C1917;font-size:13px;">Subdomain + Domain</div>
+    </div>
+    <div style="font-size:11px;color:#374151;line-height:1.7;">
+      The tool moves from its current Vercel preview URL to <strong>app.f10strategy.com</strong>. This requires pointing the subdomain in Cloudflare or wherever f10strategy.com DNS lives, and adding a custom domain in Vercel.<br><br>
+      One-time setup. Takes about 20 minutes. Makes the tool look production-ready immediately.
+    </div>
+  </div>
+
+</div>
+
+<!-- What is NOT in Tier 1 -->
+<div style="background:#1C1917;color:white;border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+  <div style="font-family:Georgia,serif;font-size:13px;color:#F59E0B;font-weight:600;margin-bottom:8px;">What is intentionally NOT in Tier 1</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+    <div style="font-size:11px;color:#9CA3AF;">❌ Stripe billing (Tier 2)</div>
+    <div style="font-size:11px;color:#9CA3AF;">❌ Client-facing portal (Tier 2)</div>
+    <div style="font-size:11px;color:#9CA3AF;">❌ Multi-rep logins (Tier 2)</div>
+    <div style="font-size:11px;color:#9CA3AF;">❌ White label layer (Tier 3)</div>
+    <div style="font-size:11px;color:#9CA3AF;">❌ Agency dashboard (Tier 3)</div>
+    <div style="font-size:11px;color:#9CA3AF;">❌ Automated provisioning (Tier 3)</div>
+  </div>
+</div>
+
+<div style="background:#F0FDF4;border:1px solid #22C55E;border-radius:8px;padding:14px 18px;">
+  <p style="font-size:12px;color:#166534;margin:0;">
+    <strong>Does this look right?</strong> Four components. Login, pipeline view, client records, and the subdomain. That is the entire Tier 1 build. Everything else waits until clients tell you what they need next.
+  </p>
+</div>
