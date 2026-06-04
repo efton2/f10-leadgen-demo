@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="940" viewBox="0 0 1000 940" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#0B1928"/>
+    </marker>
+    <marker id="arrowGold" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#C9A96E"/>
+    </marker>
+  </defs>
+
+  <!-- background -->
+  <rect width="1000" height="940" fill="#F4F1EC"/>
+
+  <!-- title -->
+  <text x="500" y="48" text-anchor="middle" font-size="26" font-weight="700" fill="#0B1928">Instagram Content Strategy — how it works</text>
+  <text x="500" y="74" text-anchor="middle" font-size="14" fill="#6B7280">One engine. Two front doors.</text>
+
+  <!-- ===== LANE HEADERS ===== -->
+  <rect x="60" y="100" width="400" height="34" rx="17" fill="#4A6FA5"/>
+  <text x="260" y="123" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF" letter-spacing="1">MANUAL · a closing tool</text>
+
+  <rect x="540" y="100" width="400" height="34" rx="17" fill="#2F855A"/>
+  <text x="740" y="123" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF" letter-spacing="1">AUTOMATIC · a renewal tool</text>
+
+  <!-- ===== ROW 1: triggers ===== -->
+  <rect x="60" y="156" width="400" height="96" rx="12" fill="#FFFFFF" stroke="#E5E0D8"/>
+  <text x="260" y="190" text-anchor="middle" font-size="17" font-weight="700" fill="#1C1917">👤  You, in a demo</text>
+  <text x="260" y="216" text-anchor="middle" font-size="13" fill="#4B5563">Open a lead → type their @handle →</text>
+  <text x="260" y="234" text-anchor="middle" font-size="13" fill="#4B5563">hit “Analyze Content”</text>
+
+  <rect x="540" y="156" width="400" height="96" rx="12" fill="#FFFFFF" stroke="#E5E0D8"/>
+  <text x="740" y="190" text-anchor="middle" font-size="17" font-weight="700" fill="#1C1917">⏰  Vercel Cron</text>
+  <text x="740" y="216" text-anchor="middle" font-size="13" fill="#4B5563">Fires every Sunday on its own</text>
+  <text x="740" y="234" text-anchor="middle" font-size="13" fill="#4B5563">(schedule set in vercel.json)</text>
+
+  <line x1="260" y1="252" x2="260" y2="288" stroke="#0B1928" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="740" y1="252" x2="740" y2="288" stroke="#0B1928" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===== ROW 2: routes ===== -->
+  <rect x="60" y="292" width="400" height="104" rx="12" fill="#EEF2F7" stroke="#D8E0EA"/>
+  <text x="260" y="320" text-anchor="middle" font-size="13" font-weight="700" fill="#4A6FA5" font-family="monospace">/api/social-audit</text>
+  <text x="260" y="344" text-anchor="middle" font-size="13" fill="#4B5563">Shows a live progress bar:</text>
+  <text x="260" y="366" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1917">fetch → analyze → score → build</text>
+  <text x="260" y="386" text-anchor="middle" font-size="11" fill="#9CA3AF">SocialAuditSection.tsx on the lead page</text>
+
+  <rect x="540" y="292" width="400" height="104" rx="12" fill="#E9F2EC" stroke="#CFE3D6"/>
+  <text x="740" y="318" text-anchor="middle" font-size="12.5" font-weight="700" fill="#2F855A" font-family="monospace">/api/cron/weekly-social-reports</text>
+  <text x="740" y="342" text-anchor="middle" font-size="13" fill="#4B5563">1. Checks the secret password (CRON_SECRET)</text>
+  <text x="740" y="362" text-anchor="middle" font-size="13" fill="#4B5563">2. Pulls every client you switched “On”</text>
+  <text x="740" y="384" text-anchor="middle" font-size="11" fill="#9CA3AF">the toggle lives on the Clients page</text>
+
+  <line x1="260" y1="396" x2="260" y2="436" stroke="#0B1928" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="740" y1="396" x2="740" y2="436" stroke="#0B1928" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===== ENGINE BAND ===== -->
+  <rect x="60" y="440" width="880" height="178" rx="14" fill="#0B1928"/>
+  <text x="500" y="472" text-anchor="middle" font-size="12" font-weight="700" fill="#C9A96E" letter-spacing="3">THE SHARED ENGINE — app/lib/socialAudit.ts</text>
+  <text x="500" y="494" text-anchor="middle" font-size="12" fill="#8B9BAD">both doors run this exact same code</text>
+
+  <!-- step 1 -->
+  <rect x="92" y="512" width="260" height="82" rx="10" fill="#13243A" stroke="#28384C"/>
+  <text x="222" y="538" text-anchor="middle" font-size="14" font-weight="700" fill="#F4F1EC">1 · Apify</text>
+  <text x="222" y="560" text-anchor="middle" font-size="12" fill="#B8C4D2">Scrapes their last</text>
+  <text x="222" y="577" text-anchor="middle" font-size="12" fill="#B8C4D2">~24 Instagram posts</text>
+
+  <text x="368" y="558" text-anchor="middle" font-size="22" fill="#C9A96E">→</text>
+
+  <!-- step 2 -->
+  <rect x="384" y="512" width="260" height="82" rx="10" fill="#13243A" stroke="#28384C"/>
+  <text x="514" y="538" text-anchor="middle" font-size="14" font-weight="700" fill="#F4F1EC">2 · Claude</text>
+  <text x="514" y="560" text-anchor="middle" font-size="12" fill="#B8C4D2">Finds top posts, best</text>
+  <text x="514" y="577" text-anchor="middle" font-size="12" fill="#B8C4D2">formats, pillars &amp; hooks</text>
+
+  <text x="660" y="558" text-anchor="middle" font-size="22" fill="#C9A96E">→</text>
+
+  <!-- step 3 -->
+  <rect x="676" y="512" width="260" height="82" rx="10" fill="#13243A" stroke="#28384C"/>
+  <text x="806" y="538" text-anchor="middle" font-size="14" font-weight="700" fill="#F4F1EC">3 · Build report</text>
+  <text x="806" y="560" text-anchor="middle" font-size="12" fill="#B8C4D2">Branded F10 report</text>
+  <text x="806" y="577" text-anchor="middle" font-size="12" fill="#B8C4D2">+ a 0–100 score</text>
+
+  <line x1="260" y1="618" x2="260" y2="664" stroke="#C9A96E" stroke-width="2" marker-end="url(#arrowGold)"/>
+  <line x1="740" y1="618" x2="740" y2="664" stroke="#C9A96E" stroke-width="2" marker-end="url(#arrowGold)"/>
+
+  <!-- ===== ROW 4: outputs ===== -->
+  <rect x="60" y="668" width="400" height="120" rx="12" fill="#FFFFFF" stroke="#E5E0D8"/>
+  <text x="260" y="700" text-anchor="middle" font-size="17" font-weight="700" fill="#1C1917">📄  Opens in a browser tab</text>
+  <text x="260" y="726" text-anchor="middle" font-size="13" fill="#4B5563">Show it on the spot, or send it</text>
+  <text x="260" y="744" text-anchor="middle" font-size="13" fill="#4B5563">alongside the proposal.</text>
+  <text x="260" y="772" text-anchor="middle" font-size="12" font-style="italic" fill="#4A6FA5">The in-person shock factor.</text>
+
+  <rect x="540" y="668" width="400" height="120" rx="12" fill="#FFFFFF" stroke="#E5E0D8"/>
+  <text x="740" y="698" text-anchor="middle" font-size="17" font-weight="700" fill="#1C1917">📧  Emailed to the client</text>
+  <text x="740" y="722" text-anchor="middle" font-size="13" fill="#4B5563">Resend sends it • saved to history</text>
+  <text x="740" y="740" text-anchor="middle" font-size="13" fill="#4B5563">(social_reports) • Telegram pings you</text>
+  <text x="740" y="772" text-anchor="middle" font-size="12" font-style="italic" fill="#2F855A">Lands in their inbox every week.</text>
+
+  <!-- footer strip -->
+  <rect x="60" y="820" width="880" height="74" rx="12" fill="#FBF7EF" stroke="#E8DFC9"/>
+  <text x="500" y="848" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0B1928">Same analysis, two purposes:</text>
+  <text x="500" y="872" text-anchor="middle" font-size="13" fill="#4B5563">MANUAL helps you <tspan font-weight="700" fill="#4A6FA5">close</tspan> a new client  ·  AUTOMATIC keeps existing clients <tspan font-weight="700" fill="#2F855A">renewing</tspan></text>
+</svg>
