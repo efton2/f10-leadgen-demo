@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getLeadDetail } from "@/app/lib/getLeadDetail";
 import ProofStack from "@/app/components/ProofStack";
 import WebsiteAuditSection from "@/app/components/WebsiteAuditSection";
+import SocialAuditSection from "@/app/components/SocialAuditSection";
 import { supabase } from "@/lib/supabase";
 
 function StatBadge({ label, value }: { label: string; value: string }) {
@@ -202,6 +203,9 @@ export default async function LeadDetailPage({
             website={lead.website}
           />
         )}
+
+        {/* Social Content Audit — prospecting wedge, runs on a public IG handle */}
+        <SocialAuditSection businessName={lead.name} />
 
         {/* Proof Stack — Competitive Analysis + Receptionist + ACE */}
         <ProofStack
