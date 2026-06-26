@@ -11,6 +11,15 @@ function isProtected(id: string | undefined | null): boolean {
   return PROTECTED_AGENT_IDS.includes(id.trim());
 }
 
+// ─── RECEPTIONIST VOICE ──────────────────────────────────────────────────────
+// The voice every demo receptionist speaks in. Defaults to the ElevenLabs
+// premade stock voice "Sarah" (warm, professional female). Override with the
+// RECEPTIONIST_VOICE_ID env var if you want a different library voice — but
+// never point this at a cloned/personal voice.
+const DEFAULT_RECEPTIONIST_VOICE_ID = "EXAVITQu4vr4xnSDxMaL"; // "Sarah" (stock)
+const RECEPTIONIST_VOICE_ID =
+  process.env.RECEPTIONIST_VOICE_ID || DEFAULT_RECEPTIONIST_VOICE_ID;
+
 // ─── SELF-CLEANING SWEEP ─────────────────────────────────────────────────────
 // Runs in the background on every tap. Lists all ElevenLabs agents, deletes any
 // named "Receptionist —" that are older than CLEANUP_AFTER_MS. Non-blocking —
@@ -117,7 +126,10 @@ export async function POST(req: NextRequest) {
           language: "en",
         },
         tts: {
-          voice_id: "ZT9u07TYPVl83ejeLakq",
+          // ElevenLabs premade stock voice "Sarah" — warm, professional female.
+          // This is a generic library voice, NOT a cloned/personal voice. Keep it
+          // a stock voice so demo receptionists never speak in someone's real voice.
+          voice_id: RECEPTIONIST_VOICE_ID,
         },
       },
     }),
