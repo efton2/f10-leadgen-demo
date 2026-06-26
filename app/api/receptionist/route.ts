@@ -13,10 +13,10 @@ function isProtected(id: string | undefined | null): boolean {
 
 // ─── RECEPTIONIST VOICE ──────────────────────────────────────────────────────
 // The voice every demo receptionist speaks in. Defaults to the ElevenLabs
-// premade stock voice "Sarah" (warm, professional female). Override with the
-// RECEPTIONIST_VOICE_ID env var if you want a different library voice — but
-// never point this at a cloned/personal voice.
-const DEFAULT_RECEPTIONIST_VOICE_ID = "EXAVITQu4vr4xnSDxMaL"; // "Sarah" (stock)
+// premade stock voice "Matilda" (warm, friendly, approachable female). Override
+// with the RECEPTIONIST_VOICE_ID env var if you want a different library voice —
+// but never point this at a cloned/personal voice.
+const DEFAULT_RECEPTIONIST_VOICE_ID = "XrExE9yKIg1WjnnlVkGX"; // "Matilda" (stock)
 const RECEPTIONIST_VOICE_ID =
   process.env.RECEPTIONIST_VOICE_ID || DEFAULT_RECEPTIONIST_VOICE_ID;
 
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
           language: "en",
         },
         tts: {
-          // ElevenLabs premade stock voice "Sarah" — warm, professional female.
+          // ElevenLabs premade stock voice "Matilda" — warm, friendly, approachable.
           // This is a generic library voice, NOT a cloned/personal voice. Keep it
           // a stock voice so demo receptionists never speak in someone's real voice.
           voice_id: RECEPTIONIST_VOICE_ID,
