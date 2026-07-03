@@ -20,6 +20,9 @@ export default function NavBar() {
         <Link href="/pipeline" className="font-body text-sm text-gray-600 hover:text-f10-primary transition-colors">
           Pipeline
         </Link>
+        <Link href="/prospecting" className="font-body text-sm text-gray-600 hover:text-f10-primary transition-colors">
+          Prospecting
+        </Link>
         <Link href="/clients" className="font-body text-sm text-gray-600 hover:text-f10-primary transition-colors">
           Clients
         </Link>
