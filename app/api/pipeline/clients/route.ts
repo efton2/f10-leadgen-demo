@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest) {
 
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
 
-  const allowed = ["contact_name","contact_email","contact_phone","sku","payment_status","provisioning_status","go_live_date","notes"];
+  const allowed = ["contact_name","contact_email","contact_phone","sku","payment_status","provisioning_status","go_live_date","notes","instagram_handle","report_email","weekly_report_enabled"];
   const filtered = Object.fromEntries(
     Object.entries(updates).filter(([k]) => allowed.includes(k))
   );

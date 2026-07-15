@@ -26,6 +26,9 @@ interface Client {
   provisioning_status: string;
   go_live_date: string | null;
   notes: string;
+  instagram_handle: string;
+  report_email: string;
+  weekly_report_enabled: boolean;
   created_at: string;
 }
 
@@ -34,7 +37,7 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  async function updateClient(id: string, updates: Record<string, string | null>) {
+  async function updateClient(id: string, updates: Record<string, string | boolean | null>) {
     setSaving(id);
     const res = await fetch("/api/pipeline/clients", {
       method: "PATCH",
@@ -67,6 +70,7 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
               <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Payment</th>
               <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Provisioning</th>
               <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Go Live</th>
+              <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Weekly Report</th>
               <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Notes</th>
             </tr>
           </thead>
@@ -128,6 +132,46 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
                   />
                 </td>
                 <td className="px-4 py-3">
+                  <div className="flex flex-col gap-1.5 min-w-[170px]">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-400">@</span>
+                      <input
+                        type="text"
+                        defaultValue={client.instagram_handle}
+                        onBlur={(e) => {
+                          const v = e.target.value.trim();
+                          if (v !== client.instagram_handle) updateClient(client.id, { instagram_handle: v });
+                        }}
+                        placeholder="handle"
+                        aria-label={`Instagram handle for ${client.business_name}`}
+                        className="w-24 text-xs text-gray-600 placeholder-gray-300 border border-gray-200 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-f10-primary"
+                      />
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={client.weekly_report_enabled}
+                          onChange={(e) => updateClient(client.id, { weekly_report_enabled: e.target.checked })}
+                          disabled={saving === client.id}
+                          aria-label={`Enable weekly report for ${client.business_name}`}
+                          className="accent-f10-primary"
+                        />
+                        <span className="text-xs text-gray-500">On</span>
+                      </label>
+                    </div>
+                    <input
+                      type="email"
+                      defaultValue={client.report_email}
+                      onBlur={(e) => {
+                        const v = e.target.value.trim();
+                        if (v !== client.report_email) updateClient(client.id, { report_email: v });
+                      }}
+                      placeholder="report email (or uses contact)"
+                      aria-label={`Report email for ${client.business_name}`}
+                      className="w-full text-xs text-gray-600 placeholder-gray-300 border border-gray-200 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-f10-primary"
+                    />
+                  </div>
+                </td>
+                <td className="px-4 py-3">
                   <input
                     type="text"
                     defaultValue={client.notes}
@@ -145,7 +189,7 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
             ))}
             {clients.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
+                <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
                   No clients yet. Mark a lead as Closed in the Pipeline to create a client record.
                 </td>
               </tr>
