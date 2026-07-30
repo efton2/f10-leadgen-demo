@@ -210,6 +210,7 @@ export default async function LeadDetailPage({
           searchNiche={searchParams.niche ?? niceType}
           phone={lead.phone}
           address={lead.address}
+          placeId={params.placeId}
         />
 
       </div>

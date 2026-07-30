@@ -9,6 +9,23 @@ interface Props {
   searchNiche?: string;
   phone: string;
   address: string;
+  placeId?: string;
+}
+
+function normalizeName(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
+}
+
+// The "search market" competitor lookup queries the same niche+city the
+// prospect itself is in, so the prospect's own listing routinely comes back
+// in the results (often ranked first) and needs to be filtered out before
+// it fills a competitor slot.
+function isSameBusiness(candidateName: string, candidatePlaceId: string, targetName: string, targetPlaceId?: string): boolean {
+  if (targetPlaceId && candidatePlaceId && candidatePlaceId === targetPlaceId) return true;
+  const c = normalizeName(candidateName);
+  const t = normalizeName(targetName);
+  if (!c || !t) return false;
+  return c === t || c.includes(t) || t.includes(c);
 }
 
 type AnalysisStatus = "idle" | "running" | "done" | "error";
@@ -95,7 +112,7 @@ function AnalysisProgress({ steps, log }: { steps: AnalysisSteps; log: string[] 
   );
 }
 
-export default function ProofStack({ name, niche, searchNiche, phone, address }: Props) {
+export default function ProofStack({ name, niche, searchNiche, phone, address, placeId }: Props) {
   // ── Competitive Analysis state ──────────────────────────────────────────────
   const city = address.split(",").slice(1, 3).join(",").trim();
   const [brand, setBrand] = useState("f10_strategy");
@@ -133,7 +150,11 @@ export default function ProofStack({ name, niche, searchNiche, phone, address }:
       });
       if (!res.ok) throw new Error("Search failed");
       const data = await res.json();
-      const names: string[] = (data.leads ?? []).slice(0, 5).map((l: { name: string }) => l.name);
+      const leads: { placeId: string; name: string }[] = data.leads ?? [];
+      const names: string[] = leads
+        .filter((l) => !isSameBusiness(l.name, l.placeId, name, placeId))
+        .slice(0, 5)
+        .map((l) => l.name);
       if (names.length === 0) {
         setCompetitorSearchError("No results — try editing the Search Market field and searching again.");
       } else {
