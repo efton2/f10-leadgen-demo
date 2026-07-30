@@ -1,6 +1,6 @@
 // app/clients/ClientsClient.tsx
 "use client";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 const PROVISIONING_COLORS: Record<string, string> = {
   not_started: "bg-gray-100 text-gray-600",
@@ -15,6 +15,13 @@ const PAYMENT_COLORS: Record<string, string> = {
   cancelled: "bg-red-100 text-red-600",
 };
 
+const REVIEW_STATUS_COLORS: Record<string, string> = {
+  queued: "bg-gray-100 text-gray-600",
+  sent: "bg-green-100 text-green-700",
+  reminded: "bg-blue-100 text-blue-700",
+  failed: "bg-red-100 text-red-600",
+};
+
 interface Client {
   id: string;
   business_name: string;
@@ -27,12 +34,84 @@ interface Client {
   go_live_date: string | null;
   notes: string;
   created_at: string;
+  weekly_report_enabled: boolean;
+  instagram_handle: string | null;
+  report_email: string | null;
+  google_review_link: string | null;
+}
+
+interface ReviewRequest {
+  id: string;
+  customer_name: string;
+  customer_email: string;
+  status: string;
+  error: string;
+  requested_at: string | null;
+  created_at: string;
 }
 
 export default function ClientsClient({ initialClients }: { initialClients: Client[] }) {
   const [clients, setClients] = useState<Client[]>(initialClients);
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  const [expandedClientId, setExpandedClientId] = useState<string | null>(null);
+  const [reviewRequests, setReviewRequests] = useState<Record<string, ReviewRequest[]>>({});
+  const [reviewsLoading, setReviewsLoading] = useState<string | null>(null);
+  const [reviewForm, setReviewForm] = useState<{ name: string; email: string }>({ name: "", email: "" });
+  const [reviewSending, setReviewSending] = useState<string | null>(null);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+
+  async function toggleReviews(clientId: string) {
+    if (expandedClientId === clientId) {
+      setExpandedClientId(null);
+      return;
+    }
+    setExpandedClientId(clientId);
+    setReviewError(null);
+    if (!reviewRequests[clientId]) {
+      setReviewsLoading(clientId);
+      const res = await fetch(`/api/reviews?client_id=${clientId}`);
+      if (res.ok) {
+        const { reviewRequests: rows } = await res.json();
+        setReviewRequests((prev) => ({ ...prev, [clientId]: rows }));
+      }
+      setReviewsLoading(null);
+    }
+  }
+
+  async function sendReviewRequest(client: Client) {
+    if (!client.google_review_link) {
+      setReviewError("Add a Google review link for this client first.");
+      return;
+    }
+    if (!reviewForm.name.trim() || !reviewForm.email.trim()) {
+      setReviewError("Customer name and email are both required.");
+      return;
+    }
+    setReviewSending(client.id);
+    setReviewError(null);
+    const res = await fetch("/api/reviews/request", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client_id: client.id,
+        customer_name: reviewForm.name.trim(),
+        customer_email: reviewForm.email.trim(),
+      }),
+    });
+    const result = await res.json();
+    if (res.ok) {
+      setReviewRequests((prev) => ({
+        ...prev,
+        [client.id]: [result.reviewRequest, ...(prev[client.id] ?? [])],
+      }));
+      setReviewForm({ name: "", email: "" });
+    } else {
+      setReviewError(result.error ?? "Failed to send review request.");
+    }
+    setReviewSending(null);
+  }
 
   async function updateClient(id: string, updates: Record<string, string | null>) {
     setSaving(id);
@@ -68,11 +147,17 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
               <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Provisioning</th>
               <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Go Live</th>
               <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Notes</th>
+              <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Weekly Report</th>
+              <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Instagram</th>
+              <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Report Email</th>
+              <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Google Review Link</th>
+              <th scope="col" className="text-left px-4 py-3 text-gray-500 font-medium">Reviews</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {clients.map((client) => (
-              <tr key={client.id} className="hover:bg-gray-50 transition-colors">
+              <Fragment key={client.id}>
+              <tr className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-3">
                   <div className="font-medium text-f10-text">{client.business_name}</div>
                   <div className="text-xs text-gray-400 mt-0.5">
@@ -141,11 +226,135 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
                     className="w-full text-xs text-gray-600 placeholder-gray-300 border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-f10-primary rounded px-1 py-0.5"
                   />
                 </td>
+                <td className="px-4 py-3 text-center">
+                  <input
+                    type="checkbox"
+                    checked={client.weekly_report_enabled ?? false}
+                    onChange={(e) => updateClient(client.id, { weekly_report_enabled: String(e.target.checked) })}
+                    aria-label={`Weekly report for ${client.business_name}`}
+                    className="w-4 h-4 accent-f10-primary cursor-pointer"
+                  />
+                </td>
+                <td className="px-4 py-3">
+                  <input
+                    type="text"
+                    defaultValue={client.instagram_handle ?? ""}
+                    onBlur={(e) => {
+                      if (e.target.value !== (client.instagram_handle ?? "")) {
+                        updateClient(client.id, { instagram_handle: e.target.value || null });
+                      }
+                    }}
+                    placeholder="@handle"
+                    aria-label={`Instagram handle for ${client.business_name}`}
+                    className="w-32 text-xs text-gray-600 placeholder-gray-300 border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-f10-primary"
+                  />
+                </td>
+                <td className="px-4 py-3">
+                  <input
+                    type="email"
+                    defaultValue={client.report_email ?? ""}
+                    onBlur={(e) => {
+                      if (e.target.value !== (client.report_email ?? "")) {
+                        updateClient(client.id, { report_email: e.target.value || null });
+                      }
+                    }}
+                    placeholder={client.contact_email || "email"}
+                    aria-label={`Report email for ${client.business_name}`}
+                    className="w-44 text-xs text-gray-600 placeholder-gray-300 border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-f10-primary"
+                  />
+                </td>
+                <td className="px-4 py-3">
+                  <input
+                    type="url"
+                    defaultValue={client.google_review_link ?? ""}
+                    onBlur={(e) => {
+                      if (e.target.value !== (client.google_review_link ?? "")) {
+                        updateClient(client.id, { google_review_link: e.target.value || null });
+                      }
+                    }}
+                    placeholder="https://g.page/r/..."
+                    aria-label={`Google review link for ${client.business_name}`}
+                    className="w-48 text-xs text-gray-600 placeholder-gray-300 border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-f10-primary"
+                  />
+                </td>
+                <td className="px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => toggleReviews(client.id)}
+                    className="text-xs font-medium px-3 py-1 rounded-full border border-gray-200 text-f10-text hover:bg-f10-tint transition-colors"
+                  >
+                    {expandedClientId === client.id ? "Hide" : "Manage"}
+                  </button>
+                </td>
               </tr>
+              {expandedClientId === client.id && (
+                <tr key={`${client.id}-reviews`} className="bg-f10-tint">
+                  <td colSpan={11} className="px-6 py-5">
+                    <div className="max-w-2xl">
+                      <p className="font-body text-xs font-medium text-gray-500 mb-3">
+                        Request a Google review from a {client.business_name} customer
+                      </p>
+                      <div className="flex gap-2 mb-2">
+                        <input
+                          type="text"
+                          placeholder="Customer name"
+                          value={reviewForm.name}
+                          onChange={(e) => setReviewForm((f) => ({ ...f, name: e.target.value }))}
+                          className="flex-1 text-sm border border-gray-200 rounded px-3 py-2"
+                        />
+                        <input
+                          type="email"
+                          placeholder="Customer email"
+                          value={reviewForm.email}
+                          onChange={(e) => setReviewForm((f) => ({ ...f, email: e.target.value }))}
+                          className="flex-1 text-sm border border-gray-200 rounded px-3 py-2"
+                        />
+                        <button
+                          type="button"
+                          disabled={reviewSending === client.id}
+                          onClick={() => sendReviewRequest(client)}
+                          className="text-sm font-medium px-4 py-2 rounded bg-f10-primary text-white disabled:opacity-50"
+                        >
+                          {reviewSending === client.id ? "Sending..." : "Send Request"}
+                        </button>
+                      </div>
+                      {reviewError && (
+                        <p className="text-xs text-red-600 mb-3">{reviewError}</p>
+                      )}
+                      {!client.google_review_link && (
+                        <p className="text-xs text-amber-600 mb-3">
+                          Add a Google review link in the column to the left before sending requests.
+                        </p>
+                      )}
+
+                      <p className="font-body text-xs font-medium text-gray-500 mt-4 mb-2">History</p>
+                      {reviewsLoading === client.id ? (
+                        <p className="text-xs text-gray-400">Loading...</p>
+                      ) : (reviewRequests[client.id] ?? []).length === 0 ? (
+                        <p className="text-xs text-gray-400">No review requests sent yet.</p>
+                      ) : (
+                        <div className="space-y-1.5">
+                          {(reviewRequests[client.id] ?? []).map((r) => (
+                            <div key={r.id} className="flex items-center gap-3 text-xs">
+                              <span className={`font-medium px-2 py-0.5 rounded-full ${REVIEW_STATUS_COLORS[r.status] ?? REVIEW_STATUS_COLORS.queued}`}>
+                                {r.status}
+                              </span>
+                              <span className="text-f10-text">{r.customer_name}</span>
+                              <span className="text-gray-400">{r.customer_email}</span>
+                              {r.error && <span className="text-red-500">{r.error}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )}
+              </Fragment>
             ))}
             {clients.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
+                <td colSpan={11} className="px-4 py-12 text-center text-gray-400">
                   No clients yet. Mark a lead as Closed in the Pipeline to create a client record.
                 </td>
               </tr>
