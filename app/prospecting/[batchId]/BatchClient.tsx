@@ -89,6 +89,8 @@ export default function BatchClient({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState<string | null>(null); // lead id currently approving/rejecting
   const [savingEmail, setSavingEmail] = useState<string | null>(null);
+  const [tickError, setTickError] = useState<string | null>(null);
+  const [retryNonce, setRetryNonce] = useState(0);
   const tickRunning = useRef(false);
   const stopped = useRef(false);
 
@@ -119,20 +121,44 @@ export default function BatchClient({
     async function loop() {
       if (tickRunning.current) return;
       tickRunning.current = true;
+      let consecutiveFailures = 0;
       while (!stopped.current) {
-        const stillWorking = await fetch("/api/prospecting/tick", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ batchId: batch.id }),
-        })
-          .then(async (res) => {
-            if (!res.ok) return false;
-            const data = await res.json();
-            await refresh();
-            return (data.remaining ?? 0) > 0;
-          })
-          .catch(() => false);
-        if (!stillWorking) break;
+        let remaining = 0;
+        let ok = false;
+        try {
+          const res = await fetch("/api/prospecting/tick", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ batchId: batch.id }),
+          });
+          if (!res.ok) throw new Error(`Tick request failed (${res.status})`);
+          const data = await res.json();
+          await refresh();
+          remaining = data.remaining ?? 0;
+          ok = true;
+        } catch (err) {
+          consecutiveFailures += 1;
+          setTickError(
+            `Enrichment hit an error (attempt ${consecutiveFailures}/3): ${
+              err instanceof Error ? err.message : String(err)
+            }`
+          );
+        }
+
+        if (ok) {
+          consecutiveFailures = 0;
+          setTickError(null);
+          if (remaining <= 0) break;
+          continue;
+        }
+
+        // A single transient failure (network blip, cold-start timeout)
+        // used to silently kill this loop forever, leaving the "Enriching…
+        // keep this page open" banner showing with no further progress and
+        // no visible error. Retry a few times with backoff before giving up
+        // and surfacing a persistent error the user can act on.
+        if (consecutiveFailures >= 3) break;
+        await new Promise((r) => setTimeout(r, 2000 * consecutiveFailures));
       }
       tickRunning.current = false;
     }
@@ -141,7 +167,7 @@ export default function BatchClient({
       stopped.current = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [batch.id]);
+  }, [batch.id, retryNonce]);
 
   // ── Mutations ───────────────────────────────────────────────────────────────
   async function patchLead(id: string, updates: Partial<ProspectingLead>) {
@@ -222,8 +248,23 @@ export default function BatchClient({
         </p>
       </div>
 
-      {/* Progress banner */}
-      {workingCount > 0 ? (
+      {/* Progress / error banner */}
+      {tickError ? (
+        <div className="bg-red-50 border border-red-200 rounded-f10 px-5 py-3 mb-6 flex items-center gap-3">
+          <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
+          <p className="font-body text-sm text-red-800 flex-1">{tickError}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setTickError(null);
+              setRetryNonce((n) => n + 1);
+            }}
+            className="text-sm font-medium px-3 py-1.5 rounded bg-red-600 text-white hover:bg-red-700 transition-colors whitespace-nowrap"
+          >
+            Retry
+          </button>
+        </div>
+      ) : workingCount > 0 ? (
         <div className="bg-blue-50 border border-blue-200 rounded-f10 px-5 py-3 mb-6 flex items-center gap-3">
           <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-ping" />
           <p className="font-body text-sm text-blue-800">

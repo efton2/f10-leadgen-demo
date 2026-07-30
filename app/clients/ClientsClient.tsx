@@ -20,6 +20,7 @@ const REVIEW_STATUS_COLORS: Record<string, string> = {
   sent: "bg-green-100 text-green-700",
   reminded: "bg-blue-100 text-blue-700",
   failed: "bg-red-100 text-red-600",
+  reviewed: "bg-purple-100 text-purple-700",
 };
 
 interface Client {
@@ -58,9 +59,16 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
   const [expandedClientId, setExpandedClientId] = useState<string | null>(null);
   const [reviewRequests, setReviewRequests] = useState<Record<string, ReviewRequest[]>>({});
   const [reviewsLoading, setReviewsLoading] = useState<string | null>(null);
-  const [reviewForm, setReviewForm] = useState<{ name: string; email: string }>({ name: "", email: "" });
+  // Keyed per client id — previously a single shared object, so switching to
+  // a different client's Manage panel without sending could leak the first
+  // client's typed name/email into a send under the second client's context.
+  const [reviewForms, setReviewForms] = useState<Record<string, { name: string; email: string }>>({});
   const [reviewSending, setReviewSending] = useState<string | null>(null);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [markingReviewedId, setMarkingReviewedId] = useState<string | null>(null);
+
+  const EMPTY_REVIEW_FORM = { name: "", email: "" };
+  const getReviewForm = (clientId: string) => reviewForms[clientId] ?? EMPTY_REVIEW_FORM;
 
   async function toggleReviews(clientId: string) {
     if (expandedClientId === clientId) {
@@ -71,63 +79,102 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
     setReviewError(null);
     if (!reviewRequests[clientId]) {
       setReviewsLoading(clientId);
-      const res = await fetch(`/api/reviews?client_id=${clientId}`);
-      if (res.ok) {
-        const { reviewRequests: rows } = await res.json();
-        setReviewRequests((prev) => ({ ...prev, [clientId]: rows }));
+      try {
+        const res = await fetch(`/api/reviews?client_id=${clientId}`);
+        if (res.ok) {
+          const { reviewRequests: rows } = await res.json();
+          setReviewRequests((prev) => ({ ...prev, [clientId]: rows }));
+        } else {
+          setReviewError("Failed to load review history. Please try again.");
+        }
+      } catch {
+        setReviewError("Failed to load review history — check your connection.");
+      } finally {
+        setReviewsLoading(null);
       }
-      setReviewsLoading(null);
     }
   }
 
   async function sendReviewRequest(client: Client) {
+    const form = getReviewForm(client.id);
     if (!client.google_review_link) {
       setReviewError("Add a Google review link for this client first.");
       return;
     }
-    if (!reviewForm.name.trim() || !reviewForm.email.trim()) {
+    if (!form.name.trim() || !form.email.trim()) {
       setReviewError("Customer name and email are both required.");
       return;
     }
     setReviewSending(client.id);
     setReviewError(null);
-    const res = await fetch("/api/reviews/request", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        client_id: client.id,
-        customer_name: reviewForm.name.trim(),
-        customer_email: reviewForm.email.trim(),
-      }),
-    });
-    const result = await res.json();
-    if (res.ok) {
-      setReviewRequests((prev) => ({
-        ...prev,
-        [client.id]: [result.reviewRequest, ...(prev[client.id] ?? [])],
-      }));
-      setReviewForm({ name: "", email: "" });
-    } else {
-      setReviewError(result.error ?? "Failed to send review request.");
+    try {
+      const res = await fetch("/api/reviews/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: client.id,
+          customer_name: form.name.trim(),
+          customer_email: form.email.trim(),
+        }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        setReviewRequests((prev) => ({
+          ...prev,
+          [client.id]: [result.reviewRequest, ...(prev[client.id] ?? [])],
+        }));
+        setReviewForms((prev) => ({ ...prev, [client.id]: EMPTY_REVIEW_FORM }));
+      } else {
+        setReviewError(result.error ?? "Failed to send review request.");
+      }
+    } catch {
+      setReviewError("Failed to send review request — check your connection.");
+    } finally {
+      setReviewSending(null);
     }
-    setReviewSending(null);
+  }
+
+  async function markReviewed(clientId: string, requestId: string) {
+    setMarkingReviewedId(requestId);
+    try {
+      const res = await fetch(`/api/reviews/${requestId}/mark-reviewed`, { method: "PATCH" });
+      if (res.ok) {
+        const { reviewRequest } = await res.json();
+        setReviewRequests((prev) => ({
+          ...prev,
+          [clientId]: (prev[clientId] ?? []).map((r) => (r.id === requestId ? reviewRequest : r)),
+        }));
+      } else {
+        setReviewError("Failed to mark reviewed. Please try again.");
+      }
+    } catch {
+      setReviewError("Failed to mark reviewed — check your connection.");
+    } finally {
+      setMarkingReviewedId(null);
+    }
   }
 
   async function updateClient(id: string, updates: Record<string, string | null>) {
     setSaving(id);
-    const res = await fetch("/api/pipeline/clients", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, ...updates }),
-    });
-    if (res.ok) {
-      const { client } = await res.json();
-      setClients((prev) => prev.map((c) => (c.id === id ? client : c)));
-    } else {
-      setSaveError("Failed to save. Please try again.");
+    try {
+      const res = await fetch("/api/pipeline/clients", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...updates }),
+      });
+      if (res.ok) {
+        const { client } = await res.json();
+        setClients((prev) => prev.map((c) => (c.id === id ? client : c)));
+      } else {
+        setSaveError("Failed to save. Please try again.");
+        setTimeout(() => setSaveError(null), 4000);
+      }
+    } catch {
+      setSaveError("Failed to save — check your connection.");
       setTimeout(() => setSaveError(null), 4000);
+    } finally {
+      setSaving(null);
     }
-    setSaving(null);
   }
 
   return (
@@ -298,15 +345,25 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
                         <input
                           type="text"
                           placeholder="Customer name"
-                          value={reviewForm.name}
-                          onChange={(e) => setReviewForm((f) => ({ ...f, name: e.target.value }))}
+                          value={getReviewForm(client.id).name}
+                          onChange={(e) =>
+                            setReviewForms((prev) => ({
+                              ...prev,
+                              [client.id]: { ...getReviewForm(client.id), name: e.target.value },
+                            }))
+                          }
                           className="flex-1 text-sm border border-gray-200 rounded px-3 py-2"
                         />
                         <input
                           type="email"
                           placeholder="Customer email"
-                          value={reviewForm.email}
-                          onChange={(e) => setReviewForm((f) => ({ ...f, email: e.target.value }))}
+                          value={getReviewForm(client.id).email}
+                          onChange={(e) =>
+                            setReviewForms((prev) => ({
+                              ...prev,
+                              [client.id]: { ...getReviewForm(client.id), email: e.target.value },
+                            }))
+                          }
                           className="flex-1 text-sm border border-gray-200 rounded px-3 py-2"
                         />
                         <button
@@ -342,6 +399,16 @@ export default function ClientsClient({ initialClients }: { initialClients: Clie
                               <span className="text-f10-text">{r.customer_name}</span>
                               <span className="text-gray-400">{r.customer_email}</span>
                               {r.error && <span className="text-red-500">{r.error}</span>}
+                              {r.status === "sent" && (
+                                <button
+                                  type="button"
+                                  disabled={markingReviewedId === r.id}
+                                  onClick={() => markReviewed(client.id, r.id)}
+                                  className="ml-auto text-purple-700 hover:underline disabled:opacity-50"
+                                >
+                                  {markingReviewedId === r.id ? "Marking..." : "Mark reviewed"}
+                                </button>
+                              )}
                             </div>
                           ))}
                         </div>

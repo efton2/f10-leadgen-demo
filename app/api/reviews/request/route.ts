@@ -74,17 +74,25 @@ export async function POST(req: NextRequest) {
   }
 
   let reminderError = "";
+  let reminderEmailId: string | null = null;
   try {
     const reminderAt = new Date(
       Date.now() + REMINDER_DELAY_DAYS * 24 * 60 * 60 * 1000
     ).toISOString();
-    await resend.emails.send({
+    const { data: reminderData, error: reminderSendError } = await resend.emails.send({
       from: FROM,
       to: [customer_email],
       subject: `One more ask, ${businessName}?`,
       html: reviewReminderHtml(businessName, customer_name, reviewLink),
       scheduledAt: reminderAt,
     });
+    if (reminderSendError) {
+      reminderError = `Reminder scheduling failed: ${reminderSendError.message ?? reminderSendError}`;
+    } else {
+      // Stored so a later "mark reviewed" action can cancel this scheduled
+      // send via resend.emails.cancel(id) before it goes out.
+      reminderEmailId = reminderData?.id ?? null;
+    }
   } catch (err) {
     reminderError = `Reminder scheduling failed: ${String(err)}`;
   }
@@ -95,6 +103,7 @@ export async function POST(req: NextRequest) {
       status: "sent",
       requested_at: new Date().toISOString(),
       error: reminderError,
+      reminder_email_id: reminderEmailId,
     })
     .eq("id", reviewRequest.id)
     .select()

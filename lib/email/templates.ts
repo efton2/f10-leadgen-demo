@@ -1,6 +1,21 @@
 // Shared Simporic email templates. Extracted from app/api/send-proposal/route.ts
 // so both the manual proposal flow and the prospecting engine use one shell.
 
+import { PRICING } from "@/lib/pricing";
+
+// customerName/businessName in the review-request emails come straight from
+// user input (POST body / Google Places), with no sanitization upstream —
+// escape before interpolating into HTML so a name like `<img src=x onerror=..>`
+// can't inject markup into an email sent on behalf of the client's business.
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function proposalToHtml(proposal: string, businessName: string): string {
   const lines = proposal.split("\n");
   let html = "";
@@ -53,12 +68,12 @@ export function proposalToHtml(proposal: string, businessName: string): string {
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#0A1520;border:1px solid #264766;border-radius:8px;padding:20px 24px;">
               <tr>
                 <td style="text-align:center;">
-                  <p style="font-family:Georgia,serif;font-size:22px;font-weight:600;color:#E8A020;margin:0 0 4px;">$497 setup &nbsp;+&nbsp; $297/month</p>
+                  <p style="font-family:Georgia,serif;font-size:22px;font-weight:600;color:#E8A020;margin:0 0 4px;">$${PRICING.standard.setup} setup &nbsp;+&nbsp; $${PRICING.standard.monthly}/month</p>
                   <p style="font-family:Arial,sans-serif;font-size:12px;color:#9CA3AF;margin:0;">No long-term contract. Cancel any time. Live in 48 hours.</p>
                 </td>
               </tr>
             </table>
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:10px 0 0;text-align:center;">Multi-location or higher call volume? Ask about Managed: $997 setup, $997/month, dedicated optimization.</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:10px 0 0;text-align:center;">Multi-location or higher call volume? Ask about Managed: $${PRICING.managed.setup} setup, $${PRICING.managed.monthly}/month, dedicated optimization.</p>
           </td>
         </tr>
 
@@ -132,7 +147,7 @@ export function finalNoticeHtml(businessName: string, aceUrl: string): string {
         <tr>
           <td style="padding:36px;">
             <p style="font-family:Georgia,serif;font-size:22px;font-weight:600;color:#F5EFE6;margin:0 0 20px;">Last note on the ${businessName} proposal</p>
-            <p style="font-family:Arial,sans-serif;font-size:14px;color:#F5EFE6;line-height:1.7;margin:0 0 16px;">We are wrapping up our outreach this week and wanted to make sure this did not fall through the cracks. The $497 setup rate we quoted is what we hold for businesses we reach out to directly. After this week it goes back to standard pricing.</p>
+            <p style="font-family:Arial,sans-serif;font-size:14px;color:#F5EFE6;line-height:1.7;margin:0 0 16px;">We are wrapping up our outreach this week and wanted to make sure this did not fall through the cracks. The $${PRICING.standard.setup} setup rate we quoted is what we hold for businesses we reach out to directly. After this week it goes back to standard pricing.</p>
             <p style="font-family:Arial,sans-serif;font-size:14px;color:#F5EFE6;line-height:1.7;margin:0 0 28px;">If the timing is not right, no problem. If you have questions before deciding, ACE can answer them right now.</p>
             <table cellpadding="0" cellspacing="0">
               <tr>
@@ -218,7 +233,8 @@ export function wrapOutreachEmail(bodyMd: string, businessName: string): string 
 // Review Engine v1 — customer-facing request + reminder. Sent on behalf of
 // the client's business, not Simporic's own outreach voice. One link, every
 // customer, no gating branch (Google review-solicitation compliance).
-function reviewShell(businessName: string, heading: string, bodyLines: string[], reviewLink: string): string {
+function reviewShell(businessNameRaw: string, heading: string, bodyLines: string[], reviewLink: string): string {
+  const businessName = escapeHtml(businessNameRaw);
   const body = bodyLines
     .map(
       (line) =>
@@ -264,12 +280,13 @@ function reviewShell(businessName: string, heading: string, bodyLines: string[],
 }
 
 export function reviewRequestHtml(businessName: string, customerName: string, reviewLink: string): string {
-  const firstName = customerName.trim().split(/\s+/)[0] || "there";
+  const firstName = escapeHtml(customerName.trim().split(/\s+/)[0] || "there");
+  const safeBusinessName = escapeHtml(businessName);
   return reviewShell(
     businessName,
     `Quick favor, ${firstName}?`,
     [
-      `Thanks for choosing ${businessName} recently. If you have 30 seconds, a review would mean a lot to us and helps other people find a business they can trust.`,
+      `Thanks for choosing ${safeBusinessName} recently. If you have 30 seconds, a review would mean a lot to us and helps other people find a business they can trust.`,
       `Just tap the button below, it takes you straight to our Google listing.`,
     ],
     reviewLink
@@ -277,12 +294,13 @@ export function reviewRequestHtml(businessName: string, customerName: string, re
 }
 
 export function reviewReminderHtml(businessName: string, customerName: string, reviewLink: string): string {
-  const firstName = customerName.trim().split(/\s+/)[0] || "there";
+  const firstName = escapeHtml(customerName.trim().split(/\s+/)[0] || "there");
+  const safeBusinessName = escapeHtml(businessName);
   return reviewShell(
     businessName,
     `One more ask, ${firstName}`,
     [
-      `We reached out a few days ago about leaving ${businessName} a quick review. No worries if things got busy, here's the link again in case it's easier now.`,
+      `We reached out a few days ago about leaving ${safeBusinessName} a quick review. No worries if things got busy, here's the link again in case it's easier now.`,
     ],
     reviewLink
   );

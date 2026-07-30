@@ -2,6 +2,7 @@
 // route and the prospecting batch runner share one implementation.
 import Anthropic from "@anthropic-ai/sdk";
 import { UsageMeter } from "@/lib/usage";
+import { PRICING } from "@/lib/pricing";
 
 export interface ProposalInput {
   name: string;
@@ -41,7 +42,7 @@ export async function generateProposal(input: ProposalInput, meter?: UsageMeter)
 Rules:
 - "What We Are Proposing" section must describe the AI Receptionist: answers calls 24/7, greets callers with the business name, books appointments, handles FAQs, never puts callers on hold
 - "What You Get" section must list: 24/7 call coverage, custom greeting for ${name}, appointment intake, FAQ handling, monthly call summary report, live within 48 hours
-- "Investment" section must state: $497 one-time setup, $297 per month, no long-term contract, cancel any time
+- "Investment" section must state the Standard plan: $${PRICING.standard.setup} one-time setup, $${PRICING.standard.monthly} per month, no long-term contract, cancel any time. End the section with one sentence noting a Managed plan is also available for multi-location or higher-volume businesses at $${PRICING.managed.setup} setup and $${PRICING.managed.monthly} per month, including dedicated call flow optimization
 - "Next Steps" must end with a call to action to reply or call to get started
 - Keep each section to 3 to 5 sentences max
 - Write as if addressing the owner of ${name} directly

@@ -118,7 +118,7 @@ export async function POST(_req: NextRequest, { params }: { params: { leadId: st
   }
 
   // 5. Log the send
-  await supabase.from("proposal_sends").insert({
+  const { error: logError } = await supabase.from("proposal_sends").insert({
     place_id: lead.place_id ?? null,
     business_name: businessName,
     recipient_email: to,
@@ -126,6 +126,11 @@ export async function POST(_req: NextRequest, { params }: { params: { leadId: st
     proposal_text: (lead.proposal_md as string) ?? "",
     status: "sent",
   });
+  if (logError) {
+    // Non-fatal — the email already sent successfully, don't fail the
+    // request over an audit-log write. But it must not be silent.
+    console.error("[prospecting/approve] Failed to log proposal_sends:", logError);
+  }
 
   // 6. Upsert into the main pipeline
   await supabase.from("pipeline_leads").upsert(
