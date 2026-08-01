@@ -20,6 +20,8 @@ import { generateProposal } from "@/lib/enrichment/proposal";
 import { generateEmailSequence, OutreachEmail } from "@/lib/enrichment/emails";
 import { UsageMeter, mergeUsage, UsageSnapshot } from "@/lib/usage";
 import { sendTelegram } from "@/lib/telegram";
+import { qualifiesForAutoApprove } from "@/lib/prospecting/autoApprove";
+import { isSuppressed } from "@/lib/suppression";
 
 const WORKING_STATUSES = ["queued", "details_done", "audited", "competitive_done", "proposal_done"];
 const TIME_BUDGET_MS = 240_000;
@@ -131,6 +133,7 @@ export async function runTick(batchId: string): Promise<{ processed: number; rem
         .select("status,contact_email")
         .eq("batch_id", batchId);
       const ready = (allLeads ?? []).filter((l) => l.status === "ready");
+      const autoQueued = (allLeads ?? []).filter((l) => l.status === "auto_queued");
       const noEmail = ready.filter((l) => !l.contact_email).length;
       const failed = (allLeads ?? []).filter((l) => l.status === "failed").length;
       await sendTelegram(
@@ -138,10 +141,13 @@ export async function runTick(batchId: string): Promise<{ processed: number; rem
           "🔎 BATCH READY FOR REVIEW",
           "",
           `${batch.niche} / ${batch.city}`,
-          `${ready.length} ready, ${noEmail} missing email, ${failed} failed`,
+          `${ready.length} ready for manual review, ${autoQueued.length} auto-queued, ${noEmail} missing email, ${failed} failed`,
           "",
           `Review at simporic.com/prospecting/${batchId}`,
-        ].join("\n")
+          autoQueued.length ? `Auto-queued leads at simporic.com/prospecting/digest` : "",
+        ]
+          .filter(Boolean)
+          .join("\n")
       );
       await supabase.from("prospecting_batches").update({ telegram_notified: true }).eq("id", batchId);
     }
@@ -300,7 +306,21 @@ async function executeStep(lead: LeadRow, batch: BatchRow, meter: UsageMeter): P
         },
         meter
       );
-      await advance(lead.id, "ready", { emails });
+
+      // Additive auto-queue check: does NOT send anything by itself, only
+      // decides which review queue the lead lands in. Suppressed addresses
+      // never auto-queue, regardless of score — they still land in 'ready'
+      // for a human to see the suppression reason if desired.
+      const suppressed = lead.contact_email ? await isSuppressed(lead.contact_email) : false;
+      const autoQualifies =
+        !suppressed &&
+        qualifiesForAutoApprove({
+          auditScore: lead.audit_score,
+          contactEmail: lead.contact_email,
+          emailsGenerated: emails.length === 3,
+        });
+
+      await advance(lead.id, autoQualifies ? "auto_queued" : "ready", { emails });
       break;
     }
 

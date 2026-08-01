@@ -6,6 +6,7 @@ const PUBLIC_PATHS = [
   "/api/auth/login",
   "/api/proof/retrieve",   // ElevenLabs webhook — no session cookie
   "/api/cron/",            // Vercel cron — protected by CRON_SECRET header
+  "/api/webhooks/resend",  // Resend webhook — protected by Svix signature
 ];
 // NOTE: /api/receptionist and /api/ace-session were previously (incorrectly)
 // public — the comment claiming "ElevenLabs session init, no session cookie"

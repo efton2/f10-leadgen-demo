@@ -3,6 +3,14 @@
     {
       "path": "/api/cron/weekly-social-reports",
       "schedule": "0 14 * * 0"
+    },
+    {
+      "path": "/api/cron/prospecting-tick",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/prospecting-digest",
+      "schedule": "0 14 * * *"
     }
   ]
 }
