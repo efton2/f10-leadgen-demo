@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/prospecting-tick",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 13 * * *"
     },
     {
       "path": "/api/cron/prospecting-digest",
