@@ -20,6 +20,29 @@ export type SendOutreachResult =
   | { ok: true; followUpError?: string }
   | { ok: false; error: string; status: number };
 
+// ============================================================================
+// PROSPECTING SENDS PAUSED — 2026-08-01. DO NOT RE-ENABLE WITHOUT READING THIS.
+//
+// Resend's Acceptable Use Policy (resend.com/legal/acceptable-use), verbatim:
+//   "You are prohibited from sending unsolicited messages of any kind,
+//    including cold outreach, purchased lists, or scraped contact data."
+//   "All mail must be sent to recipients who have explicitly opted in..."
+//
+// This module's leads come from Google Places search -- no opt-in exists.
+// That's a direct, unambiguous ToS violation on the SAME Resend account that
+// also sends proposals, review requests, and weekly client reports. Resend's
+// ToS permits immediate suspension without notice, "for any reason
+// whatsoever" -- a suspension triggered by prospecting traffic would take
+// down that legitimate traffic too.
+//
+// Re-enabling this requires moving prospecting sends to infrastructure built
+// for cold outreach (e.g. Instantly, Smartlead) -- NOT just flipping this
+// flag back. Proposals/reviews/reports are unaffected; they live in separate
+// FROM constants in app/api/send-proposal/route.ts and
+// app/api/reviews/request/route.ts, not this file.
+// ============================================================================
+const PROSPECTING_SENDS_PAUSED = true;
+
 // THE ONLY SENDER in the prospecting engine, shared by the manual
 // per-lead approve route ('ready'->'approved') and the digest batch-approve
 // route ('auto_queued'->'approved'). Hard gate: atomic fromStatus->approved
@@ -29,6 +52,17 @@ export async function sendOutreachSequence(
   leadId: string,
   fromStatus: "ready" | "auto_queued"
 ): Promise<SendOutreachResult> {
+  if (PROSPECTING_SENDS_PAUSED) {
+    // Returns before touching the DB at all -- the lead stays exactly where
+    // it was (ready or auto_queued), nothing consumed, nothing sent.
+    return {
+      ok: false,
+      status: 503,
+      error:
+        "Prospecting sends are paused -- cold outreach violates Resend's Acceptable Use Policy on this account. See lib/prospecting/sendOutreach.ts for details.",
+    };
+  }
+
   if (!process.env.RESEND_API_KEY) {
     return { ok: false, error: "Resend not configured", status: 500 };
   }
