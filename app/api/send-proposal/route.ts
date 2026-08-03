@@ -5,9 +5,9 @@ import { proposalToHtml, followUp24Html, finalNoticeHtml } from "@/lib/email/tem
 import { sendTelegram } from "@/lib/telegram";
 
 const ACE_URL = "https://ace-f10.pages.dev";
-// NOTE: only f10strategy.com is verified in Resend (checked 2026-07-02).
-// Switch to proposals@simporic.com once that domain is added and verified.
-const FROM = "Simporic <proposals@f10strategy.com>";
+// Display name is the real company (F10 Strategy) -- Simporic is an internal
+// tool name only, never shown to prospects (corrected 2026-08-01).
+const FROM = "F10 Strategy <proposals@f10strategy.com>";
 
 async function sendTelegramAlert(businessName: string, recipientEmail: string, niche: string) {
   const message = [

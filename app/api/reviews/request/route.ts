@@ -4,10 +4,17 @@ import { supabase } from "@/lib/supabase";
 import { reviewRequestHtml, reviewReminderHtml } from "@/lib/email/templates";
 import { sendTelegram } from "@/lib/telegram";
 
-// NOTE: only f10strategy.com is verified in Resend (checked 2026-07-02).
-// Switch to reviews@simporic.com once that domain is added and verified.
-const FROM = "Simporic Reviews <proposals@f10strategy.com>";
 const REMINDER_DELAY_DAYS = 3;
+
+// Review requests go out on behalf of the client's own business, not F10
+// Strategy pitching anyone -- sender name is the business the customer
+// actually did business with. Domain stays f10strategy.com (only verified
+// domain in Resend); strip characters that could break the From header or
+// look like a second address.
+function reviewFromAddress(businessName: string): string {
+  const cleaned = businessName.replace(/[\r\n"<>]/g, "").trim() || "F10 Strategy";
+  return `"${cleaned}" <proposals@f10strategy.com>`;
+}
 
 // POST /api/reviews/request — v1 manual trigger. One customer, one review
 // link, no gating branch (Google review-solicitation compliance). Reminder
@@ -57,9 +64,10 @@ export async function POST(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const businessName = client.business_name as string;
   const reviewLink = client.google_review_link as string;
+  const from = reviewFromAddress(businessName);
 
   const { error: sendError } = await resend.emails.send({
-    from: FROM,
+    from,
     to: [customer_email],
     subject: `Quick favor, ${businessName}?`,
     html: reviewRequestHtml(businessName, customer_name, reviewLink),
@@ -80,7 +88,7 @@ export async function POST(req: NextRequest) {
       Date.now() + REMINDER_DELAY_DAYS * 24 * 60 * 60 * 1000
     ).toISOString();
     const { data: reminderData, error: reminderSendError } = await resend.emails.send({
-      from: FROM,
+      from,
       to: [customer_email],
       subject: `One more ask, ${businessName}?`,
       html: reviewReminderHtml(businessName, customer_name, reviewLink),

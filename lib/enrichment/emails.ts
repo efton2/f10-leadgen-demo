@@ -40,7 +40,7 @@ export async function generateEmailSequence(input: EmailSequenceInput, meter?: U
     max_tokens: 2000,
     messages: [{
       role: "user",
-      content: `You are a senior sales copywriter at Simporic, which sells an AI Receptionist service to local businesses (${standardLine}, live in 48 hours, no contract). Write a 3-email cold outreach sequence to the owner of this business. Return ONLY valid JSON, no markdown fences.
+      content: `You are a senior sales copywriter at F10 Strategy, which sells an AI Receptionist service to local businesses (${standardLine}, live in 48 hours, no contract). Write a 3-email cold outreach sequence to the owner of this business. Return ONLY valid JSON, no markdown fences.
 
 Business: ${businessName}
 Category: ${niceCategory}

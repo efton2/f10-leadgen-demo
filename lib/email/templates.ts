@@ -47,7 +47,7 @@ export function proposalToHtml(proposal: string, businessName: string): string {
                   <span style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#FFFFFF;">F10</span>
                 </td>
                 <td style="padding-left:12px;">
-                  <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">Simporic</span>
+                  <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">F10 Strategy</span>
                 </td>
               </tr>
             </table>
@@ -80,7 +80,7 @@ export function proposalToHtml(proposal: string, businessName: string): string {
         <!-- Footer -->
         <tr>
           <td style="background:#060D16;border-top:1px solid #264766;padding:20px 36px;text-align:center;">
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">F10 Strategy &nbsp;&bull;&nbsp; f10strategy.com</p>
           </td>
         </tr>
 
@@ -101,7 +101,7 @@ export function followUp24Html(businessName: string, aceUrl: string): string {
       <table width="600" cellpadding="0" cellspacing="0" style="margin:0 auto;background:#162C42;border-radius:12px;border:1px solid #264766;overflow:hidden;">
         <tr>
           <td style="background:#0A1520;padding:24px 36px;">
-            <span style="font-family:Georgia,serif;font-size:16px;font-weight:600;color:#FFFFFF;">Simporic</span>
+            <span style="font-family:Georgia,serif;font-size:16px;font-weight:600;color:#FFFFFF;">F10 Strategy</span>
           </td>
         </tr>
         <tr>
@@ -121,7 +121,7 @@ export function followUp24Html(businessName: string, aceUrl: string): string {
         </tr>
         <tr>
           <td style="background:#060D16;border-top:1px solid #264766;padding:20px 36px;text-align:center;">
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">F10 Strategy &nbsp;&bull;&nbsp; f10strategy.com</p>
           </td>
         </tr>
       </table>
@@ -141,7 +141,7 @@ export function finalNoticeHtml(businessName: string, aceUrl: string): string {
       <table width="600" cellpadding="0" cellspacing="0" style="margin:0 auto;background:#162C42;border-radius:12px;border:1px solid #264766;overflow:hidden;">
         <tr>
           <td style="background:#0A1520;padding:24px 36px;">
-            <span style="font-family:Georgia,serif;font-size:16px;font-weight:600;color:#FFFFFF;">Simporic</span>
+            <span style="font-family:Georgia,serif;font-size:16px;font-weight:600;color:#FFFFFF;">F10 Strategy</span>
           </td>
         </tr>
         <tr>
@@ -160,7 +160,7 @@ export function finalNoticeHtml(businessName: string, aceUrl: string): string {
         </tr>
         <tr>
           <td style="background:#060D16;border-top:1px solid #264766;padding:20px 36px;text-align:center;">
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">F10 Strategy &nbsp;&bull;&nbsp; f10strategy.com</p>
           </td>
         </tr>
       </table>
@@ -207,7 +207,7 @@ export function wrapOutreachEmail(bodyMd: string, businessName: string): string 
                   <span style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#FFFFFF;">F10</span>
                 </td>
                 <td style="padding-left:12px;">
-                  <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">Simporic</span>
+                  <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">F10 Strategy</span>
                 </td>
               </tr>
             </table>
@@ -220,7 +220,7 @@ export function wrapOutreachEmail(bodyMd: string, businessName: string): string 
         </tr>
         <tr>
           <td style="background:#060D16;border-top:1px solid #264766;padding:20px 36px;text-align:center;">
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com &nbsp;&bull;&nbsp; Prepared for ${businessName}</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">F10 Strategy &nbsp;&bull;&nbsp; f10strategy.com &nbsp;&bull;&nbsp; Prepared for ${businessName}</p>
           </td>
         </tr>
       </table>
@@ -269,7 +269,7 @@ function reviewShell(businessNameRaw: string, heading: string, bodyLines: string
         </tr>
         <tr>
           <td style="background:#060D16;border-top:1px solid #264766;padding:20px 36px;text-align:center;">
-            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Sent on behalf of ${businessName} &nbsp;&bull;&nbsp; powered by Simporic</p>
+            <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Sent on behalf of ${businessName} &nbsp;&bull;&nbsp; powered by F10 Strategy</p>
           </td>
         </tr>
       </table>

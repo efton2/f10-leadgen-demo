@@ -175,7 +175,7 @@ function buildReportHtml(
           <span style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#FFFFFF;">F10</span>
         </td>
         <td style="padding-left:12px;">
-          <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">Simporic</span>
+          <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">F10 Strategy</span>
         </td>
       </tr></table>
       <p style="font-family:Arial,sans-serif;font-size:13px;color:rgba(255,255,255,0.75);margin:10px 0 0;">Instagram Content Report &nbsp;|&nbsp; ${businessName}</p>
@@ -299,7 +299,7 @@ function buildReportHtml(
   <!-- Footer -->
   <tr>
     <td style="background:#F7F9FC;border-top:1px solid #E5E0D8;padding:20px 36px;text-align:center;">
-      <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com &nbsp;&bull;&nbsp; Powered by F10 Strategy</p>
+      <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">F10 Strategy &nbsp;&bull;&nbsp; f10strategy.com</p>
     </td>
   </tr>
 
@@ -334,7 +334,7 @@ function buildEmailBodyHtml(
 <table width="600" cellpadding="0" cellspacing="0" style="margin:0 auto;background:#FFFFFF;border-radius:12px;border:1px solid #E5E0D8;overflow:hidden;">
   <tr>
     <td style="background:#4A6FA5;padding:24px 36px;">
-      <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">Simporic</span>
+      <span style="font-family:Georgia,serif;font-size:18px;font-weight:600;color:#FFFFFF;">F10 Strategy</span>
       <p style="font-family:Arial,sans-serif;font-size:12px;color:rgba(255,255,255,0.7);margin:6px 0 0;">Weekly Instagram Report &nbsp;|&nbsp; ${runDate}</p>
     </td>
   </tr>
@@ -366,7 +366,7 @@ function buildEmailBodyHtml(
   </tr>
   <tr>
     <td style="background:#F7F9FC;border-top:1px solid #E5E0D8;padding:16px 36px;text-align:center;">
-      <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">Simporic &nbsp;&bull;&nbsp; simporic.com</p>
+      <p style="font-family:Arial,sans-serif;font-size:11px;color:#9CA3AF;margin:0;">F10 Strategy &nbsp;&bull;&nbsp; f10strategy.com</p>
     </td>
   </tr>
 </table>
@@ -468,7 +468,7 @@ export async function GET(req: NextRequest) {
       if (!toEmail) throw new Error("No recipient email");
 
       const { error: sendError } = await resend.emails.send({
-        from: "Simporic <reports@f10strategy.com>",
+        from: "F10 Strategy <reports@f10strategy.com>",
         to: [toEmail],
         subject: `${client.business_name} — Weekly Content Report`,
         html: bodyHtml,
