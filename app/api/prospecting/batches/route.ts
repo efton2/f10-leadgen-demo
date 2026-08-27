@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { searchPlacesPaginated } from "@/lib/prospecting/places";
 import { estimateBatchCost } from "@/lib/usage";
+import { PROSPECTING_PAUSED } from "@/lib/prospecting/pause";
 
 export const maxDuration = 60;
 
@@ -10,6 +11,20 @@ export const maxDuration = 60;
 // This is the only place external money is spent before the tick runner, and
 // it fires only from the "Run Batch (est. $X)" button.
 export async function POST(req: NextRequest) {
+  if (PROSPECTING_PAUSED) {
+    // Blocked at the top, before any Places spend -- sends are paused (see
+    // lib/prospecting/pause.ts), so a new batch can never reach 'approved'.
+    // No point spending on search, running the enrichment pipeline, or
+    // pinging Telegram toward a send that will never happen.
+    return NextResponse.json(
+      {
+        error:
+          "Prospecting is paused -- cold outreach violates Resend's Acceptable Use Policy on this account. See lib/prospecting/pause.ts for details.",
+      },
+      { status: 503 }
+    );
+  }
+
   const { niche, city, count, depth } = await req.json();
 
   if (!niche || !city) {
